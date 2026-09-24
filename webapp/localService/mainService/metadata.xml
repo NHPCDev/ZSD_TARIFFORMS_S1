@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema Namespace="ZSD_TARIFF_FORMS_SRV" xml:lang="en" sap:schema-version="1" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+            <EntityType Name="TARIFF_DETAILS" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="PLANT"/>
+                    <PropertyRef Name="REQ_ID"/>
+                </Key>
+                <Property Name="PETITIONER" Type="Edm.String" sap:unicode="false"/>
+                <Property Name="SUBMIT_TO" Type="Edm.String" sap:unicode="false"/>
+                <Property Name="PLANT" Type="Edm.String" Nullable="false" sap:unicode="false"/>
+                <Property Name="PLANT_STAGE" Type="Edm.String" sap:unicode="false"/>
+                <Property Name="PLANT_TYPE" Type="Edm.String" sap:unicode="false"/>
+                <Property Name="REGION" Type="Edm.String" sap:unicode="false"/>
+                <Property Name="DISTRICT" Type="Edm.String" sap:unicode="false"/>
+                <Property Name="STATE" Type="Edm.String" sap:unicode="false"/>
+                <Property Name="FROM_DATE" Type="Edm.String" sap:unicode="false"/>
+                <Property Name="TO_DATE" Type="Edm.String" sap:unicode="false"/>
+                <Property Name="REQ_ID" Type="Edm.String" Nullable="false" sap:unicode="false"/>
+                <Property Name="STATUS" Type="Edm.String" sap:unicode="false"/>
+                <Property Name="PLANT_CATEGORY" Type="Edm.String" sap:unicode="false"/>
+                <Property Name="PLANT_DESC" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityType Name="DROPDOWN_SEL" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="NEW_EXT_PLANT"/>
+                </Key>
+                <Property Name="NEW_EXT_PLANT" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityType Name="PLANT_LIST" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="WERKS"/>
+                </Key>
+                <Property Name="WERKS" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="NAME1" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="REGION" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="DISTRICT" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="STATE" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="PLANT_STAGE" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="PLANT_TYPE" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityType Name="ATTACHMENT" m:HasStream="true" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="FILENAME"/>
+                    <PropertyRef Name="REQ_ID"/>
+                    <PropertyRef Name="DOC_ID"/>
+                </Key>
+                <Property Name="FILENAME" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="MIMETYPE" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="VALUE" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="REQ_ID" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="UPDATE_ON" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="UPDATE_BY" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="DOC_ID" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityType Name="STATUS" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="STATUS_DROPDOWN"/>
+                </Key>
+                <Property Name="STATUS_DROPDOWN" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityType Name="FORM_LIST" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="PLANT_CATEGORY"/>
+                </Key>
+                <Property Name="FORMS" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="PLANT_CATEGORY" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="FROM_DATE" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="TO_DATE" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="MANDATORY" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="INPUT_DATA" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="OUTPUT_DATA" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityContainer Name="ZSD_TARIFF_FORMS_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
+                <EntitySet Name="TARIFF_DETAILSSet" EntityType="ZSD_TARIFF_FORMS_SRV.TARIFF_DETAILS" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:addressable="false" sap:content-version="1"/>
+                <EntitySet Name="DROPDOWN_SELSet" EntityType="ZSD_TARIFF_FORMS_SRV.DROPDOWN_SEL" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:addressable="false" sap:content-version="1"/>
+                <EntitySet Name="PLANT_LISTSet" EntityType="ZSD_TARIFF_FORMS_SRV.PLANT_LIST" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:addressable="false" sap:content-version="1"/>
+                <EntitySet Name="ATTACHMENTSet" EntityType="ZSD_TARIFF_FORMS_SRV.ATTACHMENT" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:addressable="false" sap:content-version="1"/>
+                <EntitySet Name="STATUSSet" EntityType="ZSD_TARIFF_FORMS_SRV.STATUS" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:addressable="false" sap:content-version="1"/>
+                <EntitySet Name="FORM_LISTSet" EntityType="ZSD_TARIFF_FORMS_SRV.FORM_LIST" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:addressable="false" sap:content-version="1"/>
+            </EntityContainer>
+            <Annotation Term="Core.SchemaVersion" String="1.0.0" xmlns="http://docs.oasis-open.org/odata/ns/edm"/>
+            <atom:link rel="self" href="https://VHNPDDNHCI.SAP.NHPC.IN:44300/sap/opu/odata/sap/ZSD_TARIFF_FORMS_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+            <atom:link rel="latest-version" href="https://VHNPDDNHCI.SAP.NHPC.IN:44300/sap/opu/odata/sap/ZSD_TARIFF_FORMS_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

@@ -1,0 +1,148 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout"
+    xmlns:u="sap.ui.unified"
+    xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <Dialog
+        id="idCreateTariffFormDialog"
+        title="{i18n>createTrfDialogTitle}"
+        titleAlignment="Center"
+        class="sapUiSizeCompact"
+    >
+        <content>
+            <VBox id="idTrfCrDlgVbox">
+                <f:SimpleForm
+                    id="idTrfSmfCrDl"
+                    editable="true"
+                    layout="ResponsiveGridLayout"
+                >
+                    <f:content>
+
+                        <Label
+                            id="idTrfSmfCrDlLbl1"
+                            text="{i18n>profitCenterCreateDialogLbl}"
+                            required="true"
+                        />
+
+                        <Input 
+                            id="idTrfSmfCrDlinp1"
+                            width="100%"
+                            value="{viewModel>/createTariff/profitCenter}"
+                            showValueHelp="true"
+                            app:valuehelp="profitCenterValueHelpRequest"
+                            valueHelpRequest="onValueHelpRequest"
+                            change="onValueHelpChange"
+                            valueState="{viewModel>/createTariff/profitCenterValueState}"
+                            valueStateText="{viewModel>/createTariff/profitCenterValueStateText}"
+                            />
+
+                        <Label
+                            id="idTrfSmfCrDlplantf4"
+                            text="{i18n>plantCreateDialogLbl}"
+                            required="true"
+                        />
+
+                        <Input 
+                            id="idTrfSmfCrDlinplant1"
+                            width="100%"
+                            value="{viewModel>/createTariff/plant}"
+                            showValueHelp="true"
+                            app:valuehelp="plantValueHelpRequest"
+                            valueHelpRequest="onValueHelpRequest"
+                            change="onValueHelpChange"
+                            valueState="{viewModel>/createTariff/plantValueState}"
+                            valueStateText="{viewModel>/createTariff/plantValueStateText}"
+                            />
+
+                        <Label
+                            id="idTrfSmfCrDlLbl2"
+                            text="{i18n>tariffPeriodCreateDialogLbl}"
+                            required="true"
+                        />
+
+                        <ComboBox
+                            id="idTrfSmfCrDlCmb2"
+                            width="100%"
+                            selectedKey="{viewModel>/createTariff/tariffPeriod}"
+                            valueState="{viewModel>/createTariff/tariffPeriodValueState}"
+                            valueStateText="{viewModel>/createTariff/tariffPeriodValueStateText}"
+                            change="onComboBoxChange"
+                            items="{path: '/Tarrif_Period_F4Set'}"
+                        >
+                            <core:ListItem
+                                id="idTrfSmfCrDlLstItmTP"
+                                key="{Fisical_Year}"
+                                text="{Fisical_Year}"
+                            />
+                        </ComboBox>
+
+                        <Label
+                            id="idTrfSmfCrDlLbl3"
+                            text="{i18n>tariffStageCreateDialogLbl}"
+                            required="true"
+                        />
+
+                        <ComboBox
+                            id="idTrfSmfCrDlCmb3"
+                            width="100%"
+                            selectedKey="{viewModel>/createTariff/tariffStage}"
+                            valueState="{viewModel>/createTariff/tariffStageValueState}"
+                            valueStateText="{viewModel>/createTariff/tariffStageValueStateText}"
+                            change="onComboBoxChange"
+                            items="{path: '/Tarrif_Stage_F4Set'}"
+                        >
+                            <core:ListItem
+                                id="idTrfSmfCrDlLstItmTS"
+                                key="{Key}"
+                                text="{Status}"
+                            />
+                        </ComboBox>
+
+                        <Label
+                            id="idTrfSmfCrDlLbl4"
+                            text="{i18n>plantStageCreateDialogLbl}"
+                            required="true"
+                        />
+
+                        <ComboBox
+                            id="idTrfSmfCrDlCmb4"
+                            width="100%"
+                            selectedKey="{viewModel>/createTariff/plantStage}"
+                            valueState="{viewModel>/createTariff/plantStageValueState}"
+                            valueStateText="{viewModel>/createTariff/plantStageValueStateText}"
+                            change="onComboBoxChange"
+                            items="{path: '/Plant_Stage_F4Set'}"
+                        >
+                            <core:ListItem
+                                id="idTrfSmfCrDlLstItm4"
+                                key="{Key}"
+                                text="{Status}"
+                            />
+                        </ComboBox>
+
+                    </f:content>
+                </f:SimpleForm>
+            </VBox>
+        </content>
+
+        <beginButton>
+            <Button
+                id="idTrfOkCrDlBtn"
+                text="{i18n>SubmitBtnTextCrDialog}"
+                type="Emphasized"
+                press="handleCreateTariffConfirm"
+            />
+        </beginButton>
+
+        <endButton>
+            <Button
+                id="idTrfCanCrDlBtn"
+                text="{i18n>cancelBtnTextCrDialog}"
+                press="handleCreateTariffCancel"
+            />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

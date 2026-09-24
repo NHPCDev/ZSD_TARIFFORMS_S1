@@ -1,0 +1,247 @@
+<mvc:View
+    controllerName="com.nhpc.zsdtarifformss1.controller.Detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:uxap="sap.uxap"
+    xmlns:core="sap.ui.core"
+    displayBlock="true"
+>
+    <Page
+        id="idPageDetail"
+        showHeader="false"
+    >
+        <content>
+            <uxap:ObjectPageLayout
+                id="ObjectPageLayout"
+                upperCaseAnchorBar="false"
+            >
+                <!-- HEADER -->
+                <uxap:headerTitle>
+                    <uxap:ObjectPageDynamicHeaderTitle id="idObjPgDhdrTitle">
+                        <!-- Expanded Header -->
+                        <uxap:expandedHeading>
+                            <HBox
+                                id="idHdtTitleEHdrHbox"
+                                fitContainer="true"
+                                alignItems="Center"
+                            >
+                                <Avatar
+                                    id="idHdtTitleEHdrHboxAvatar"
+                                    src="sap-icon://document-text"
+                                    class="sapUiTinyMarginEnd"
+                                    displaySize="S"
+                                    displayShape="Square"
+                                />
+
+                                <VBox
+                                    id="idHdtTitleEHdrHboxVbox"
+                                    class="sapUiTinyMarginBegin"
+                                >
+                                    <!-- Create Mode -->
+                                    <Title
+                                        id="idHdtTitleEHdrHboxVboxT1"
+                                        text="{i18n>detailCreatePageHeader}"
+                                        visible="{= ${viewModel>/mode} === 'Create' }"
+                                        wrapping="true"
+                                    />
+
+                                    <!-- Display Mode -->
+                                    <Title
+                                        id="idHdtTitleEHdrHboxVboxT2"
+                                        text="{i18n>ObjectPageTitle} - {viewModel>/Header/tariffId}"
+                                        visible="{= ${viewModel>/mode} === 'Display' }"
+                                        wrapping="true"
+                                    />
+
+                                    <ObjectStatus
+                                        id="idHdtTitleEHdrHboxVboxSt"
+                                        title="{i18n>HeaderStatusText}"
+                                        text="{
+                                            path:'viewModel>/Header/Status',
+                                            formatter:'.formatter.formatStatusText'
+                                        }"
+                                        class="sapMObjectStatusMedium statusBoldText"
+                                        state="{
+                                            path:'viewModel>/Header/Status',
+                                            formatter:'.formatter.formatStatusState'
+                                        }"
+                                    />
+                                </VBox>
+                            </HBox>
+                        </uxap:expandedHeading>
+
+                        <!-- Snapped Header -->
+                        <uxap:snappedHeading>
+                            <HBox
+                                id="idHdtTitleSHdrHbox"
+                                fitContainer="true"
+                                alignItems="Center"
+                            >
+                                <Avatar
+                                    id="idHdtTitleSHdrHboxVboxAvatar"
+                                    src="sap-icon://document-text"
+                                    class="sapUiTinyMarginEnd"
+                                    displayShape="Square"
+                                />
+
+                                <VBox
+                                    id="idHdtTitleSHdrHboxVbox"
+                                    class="sapUiTinyMarginBegin"
+                                >
+                                    <!-- Create Mode -->
+                                    <Title
+                                        id="idHdtTitleSHdrHboxVboxT1"
+                                        text="{i18n>detailCreatePageHeader}"
+                                        visible="{= ${viewModel>/mode} === 'Create' }"
+                                        wrapping="true"
+                                    />
+
+                                    <!-- Display Mode -->
+                                    <Title
+                                        id="idHdtTitleSHdrHboxVboxT2"
+                                        text="{i18n>ObjectPageTitle} - {viewModel>/Header/tariffId}"
+                                        visible="{= ${viewModel>/mode} === 'Display' }"
+                                        wrapping="true"
+                                    />
+
+                                    <ObjectStatus
+                                        id="idHdtTitleSHdrHboxVboxSt"
+                                        title="{i18n>HeaderStatusText}"
+                                        text="{
+                                            path:'viewModel>/Header/Status',
+                                            formatter:'.formatter.formatStatusText'
+                                        }"
+                                        class="sapMObjectStatusMedium statusBoldText"
+                                        state="{
+                                            path:'viewModel>/Header/Status',
+                                            formatter:'.formatter.formatStatusState'
+                                        }"
+                                    />
+                                </VBox>
+                            </HBox>
+                        </uxap:snappedHeading>
+                    </uxap:ObjectPageDynamicHeaderTitle>
+                </uxap:headerTitle>
+
+                <!-- <uxap:headerContent>
+                    <core:Fragment
+                        type="XML"
+                        fragmentName="com.nhpc.zsdtarifformss1.fragments.EmployeeDetails"
+                    />
+                </uxap:headerContent> -->
+
+                <!-- SECTIONS -->
+                <uxap:sections>
+                    <!-- General Information -->
+                    <uxap:ObjectPageSection
+                        id="idObjSecGenInfo"
+                        titleUppercase="false"
+                        title="{i18n>generalInfoSecHeader}"
+                    >
+                        <uxap:subSections>
+                            <uxap:ObjectPageSubSection id="idObjSubSecGenInfo">
+                                <uxap:blocks>
+                                    <VBox id="idObjSecGenInfoVBox">
+                                        <core:Fragment
+                                            fragmentName="com.nhpc.zsdtarifformss1.fragments.sections.GeneralInfo"
+                                            type="XML"
+                                        />
+                                    </VBox>
+                                </uxap:blocks>
+                            </uxap:ObjectPageSubSection>
+                        </uxap:subSections>
+                    </uxap:ObjectPageSection>
+
+                    <!-- Forms DETAILS -->
+                    <uxap:ObjectPageSection
+                        id="idObjSecTrfDtl"
+                        titleUppercase="false"
+                        title="{i18n>formDetailsSecHeader}"
+                    >
+                        <uxap:subSections>
+                            <uxap:ObjectPageSubSection id="idObjSubSecTrfDtl">
+                                <uxap:blocks>
+                                    <VBox id="idObjSecCompDtlVBox">
+                                        <core:Fragment
+                                            fragmentName="com.nhpc.zsdtarifformss1.fragments.sections.Forms"
+                                            type="XML"
+                                        />
+                                    </VBox>
+                                </uxap:blocks>
+                            </uxap:ObjectPageSubSection>
+                        </uxap:subSections>
+                    </uxap:ObjectPageSection>
+
+                    <!-- Attachments Section -->
+                    <uxap:ObjectPageSection
+                        id="idObjSecAttachments"
+                        titleUppercase="false"
+                        title="{i18n>uploadAttachmentSecHeader}"
+                    >
+                        <uxap:subSections>
+                            <uxap:ObjectPageSubSection
+                                id="idObjSubSecTrfDtlAttach"
+                            >
+                                <uxap:blocks>
+                                    <VBox id="idObjSecTrfDtlVBoxAttach">
+                                        <core:Fragment
+                                            fragmentName="com.nhpc.zsdtarifformss1.fragments.sections.Attachments"
+                                            type="XML"
+                                        />
+                                    </VBox>
+                                </uxap:blocks>
+                            </uxap:ObjectPageSubSection>
+                        </uxap:subSections>
+                    </uxap:ObjectPageSection>
+
+                    <!-- History With Remarks Section -->
+                    <!-- <uxap:ObjectPageSection  id="idObjSecHistory"
+                        titleUppercase="false"
+                        title="{i18n>HistoryWithRemarks}"
+                    >
+                        <uxap:subSections>
+                            <uxap:ObjectPageSubSection id="idObjSubSecHistory"
+                                visible="{= ${viewModel>/Header/Status} !== 'W'
+                                    &amp;&amp; ${viewModel>/Header/Status} !== 'S' }"
+                            >
+                                <uxap:blocks>
+                                    <VBox id="idObjSecHistoryVbox">
+                                        <core:Fragment
+                                            fragmentName="com.nhpc.zsdtarifformss1.fragments.sections.Remarks"
+                                            type="XML"
+                                        />
+                                    </VBox>
+                                </uxap:blocks>
+                            </uxap:ObjectPageSubSection>
+                        </uxap:subSections>
+                    </uxap:ObjectPageSection> -->
+                </uxap:sections>
+            </uxap:ObjectPageLayout>
+        </content>
+
+        <!-- FOOTER -->
+        <footer>
+            <OverflowToolbar id="idOvrTlbarFtr">
+                <ToolbarSpacer id="idTlbarSpcrFtr" />
+
+                <!-- <Button
+                    id="idSaveBtn"
+                    text="{i18n>saveBtnTxt}"
+                    icon="sap-icon://save"
+                    type="Critical"
+                    press="handlePostBtnPress"
+                    visible="{viewModel>/editable}"
+                /> -->
+
+                <Button
+                    id="idSubmitBtn"
+                    text="{i18n>submitBtnTxt}"
+                    icon="sap-icon://create"
+                    type="Success"
+                    press="handlePostBtnPress"
+                    visible="{viewModel>/editable}"
+                />
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>

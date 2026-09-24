@@ -1,0 +1,125 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Table
+        id="idTrfFormDetailsTables"
+        items="{
+            path: 'viewModel>/Header/Forms'
+        }"
+        growing="true"
+        updateFinished="onTariffFormTableUpdateFinish"
+    >
+        <headerToolbar>
+            <OverflowToolbar id="idOverTlbrComDtl">
+                <content>
+                    <Title
+                        id="idTrfOvrFlwTableTitles"
+                        text="{i18n>ManageTfrTableTitle}"
+                        level="H2"
+                    />
+                </content>
+            </OverflowToolbar>
+        </headerToolbar>
+
+        <columns>
+            <Column
+                id="idColHdrDtlComp1"
+                width="7rem"
+            >
+                <Text
+                    id="idColHdrTxtDtlComp1"
+                    text="{i18n>formId}"
+                />
+            </Column>
+
+            <Column
+                id="idColHdrDtlComp2"
+            >
+                <Text
+                    id="idColHdrTxtDtlComp2"
+                    text="{i18n>FormDesc}"
+                />
+            </Column>
+
+            <Column
+                id="idColHdrDtlComp3"
+            >
+                <Text
+                    id="idColHdrTxtDtlComp3"
+                    text="{i18n>apllicable}"
+                />
+            </Column>
+
+            <Column
+                id="idColHdrDtlComp4"
+            >
+                <Text
+                    id="idColHdrTxtDtlComp4"
+                    text="{i18n>Mandatory}"
+                />
+            </Column>
+
+            <Column
+                id="idColHdrDtlComp5"
+            >
+                <Text
+                    id="idColHdrTxtDtlComp5"
+                    text="{i18n>fisicalYearLabel}"
+                />
+            </Column>
+
+            <Column
+                id="idColHdrDtlComp6"
+
+            >
+                <Text
+                    id="idColHdrTxtDtlComp6"
+                    text="{i18n>FormStatusLabel}"
+                />
+            </Column>
+        </columns>
+
+        <items>
+            <ColumnListItem
+                id="idCompDtlCllstItm"
+                type="Navigation"
+                press="onFormDetailsPress"
+            >
+                <cells>
+
+                    <ObjectIdentifier
+                        id="idFormId"
+                        title="{viewModel>Form_id}"
+                    />
+
+                    <Text
+                        id="idFormDescription"
+                        text="{viewModel>Form_desc}"
+                    />
+
+                    <Text
+                        id="idApplicable"
+                        text="{viewModel>Prov}"
+                    />
+
+                    <CheckBox
+                        id="idMandatoryqw"
+                        selected="{= ${viewModel>Ztrue} === 'X'}"
+                        editable="{viewModel>/editable}"
+                    />
+                    <Text
+                        id="idFiscalYear"
+                        text="{viewModel>Fisical_Year}"
+                    />
+
+                    <Text
+                        id="idFormStatus"
+                        text="{viewModel>Status}"
+                    />
+
+                </cells>
+            </ColumnListItem>
+        </items>
+    </Table>
+</core:FragmentDefinition>

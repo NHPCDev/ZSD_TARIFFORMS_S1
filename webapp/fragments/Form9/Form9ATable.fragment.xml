@@ -1,0 +1,221 @@
+<core:FragmentDefinition
+    xmlns="sap.ui.table"
+    xmlns:core="sap.ui.core"
+    xmlns:m="sap.m"
+    xmlns:rowmodes="sap.ui.table.rowmodes"
+    class="sapUiSizeCompact"
+>
+    <TreeTable
+        id="idForm9ATable"
+        rows="{
+            path: 'viewModel>/catalog/Form9A',
+            parameters: {
+                arrayNames: ['Form9Ahead_9AItem']
+            }
+        }"
+        selectionMode="Single"
+        selectionBehavior="RowOnly"
+        enableSelectAll="true"
+        fixedColumnCount="2"
+        class="sapUiSizeCompact"
+        alternateRowColors="true"
+    >
+        <extension>
+            <m:OverflowToolbar>
+                <m:ToolbarSpacer />
+                <m:Button
+                    text="{i18n>addChild}"
+                    icon="sap-icon://add"
+                    type="Emphasized"
+                    press=".onForm9AAdd"
+                />
+                <m:Button
+                    text="{i18n>deleteChild}"
+                    icon="sap-icon://delete"
+                    type="Reject"
+                    press=".onForm9ADelete"
+                />
+            </m:OverflowToolbar>
+        </extension>
+        <rowMode>
+            <rowmodes:Fixed
+                rowContentHeight="70"
+                rowCount="4"
+            />
+        </rowMode>
+        <columns>
+            <Column
+                width="400px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>title1}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:Text
+                        text="{viewModel>Text}"
+                        wrapping="true"
+                        class="sapUiSmallMargin statusBoldText"
+                    />
+                </template>
+            </Column>
+            <Column
+                width="200px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>headOfWork}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:TextArea
+                        value="{viewModel>Equipment}"
+                        rows="3"
+                        growing="false"
+                        width="100%"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        visible="{= !${viewModel>Text} }"
+                    />
+                </template>
+            </Column>
+            <Column
+                width="120px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>headOfAccount}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:Input
+                        value="{viewModel>Head_Account}"
+                        liveChange="onNumberInputChange"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        visible="{= !${viewModel>Text} }"
+                    />
+                </template>
+            </Column>
+            <Column
+                width="120px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>accuralBasis}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:Input
+                        value="{viewModel>Accural_Basis}"
+                        liveChange="onDecimalNumberChange"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        visible="{= !${viewModel>Text} }"
+                    />
+                </template>
+            </Column>
+            <Column
+                width="140px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>unDischargedLiability}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:Input
+                        value="{viewModel>Discharge_Liabilty}"
+                        liveChange="onDecimalNumberChange"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        visible="{= !${viewModel>Text} }"
+                    />
+                </template>
+            </Column>
+            <Column
+                width="120px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>cashBasis}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:Input
+                        value="{viewModel>Cash_Basis}"
+                        liveChange="onDecimalNumberChange"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        visible="{= !${viewModel>Text} }"
+                    />
+                </template>
+            </Column>
+            <Column
+                width="120px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>IDCIncluded}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:Input
+                        value="{viewModel>Idc}"
+                        liveChange="onDecimalNumberChange"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        visible="{= !${viewModel>Text} }"
+                    />
+                </template>
+            </Column>
+            <Column
+                width="150px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>regulationUnderWhichClaimed}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:Input
+                        value="{viewModel>Regulation}"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        visible="{= !${viewModel>Text} }"
+                    />
+                </template>
+            </Column>
+            <Column
+                width="300px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>justification}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:TextArea
+                        value="{viewModel>Justification}"
+                        rows="3"
+                        growing="false"
+                        width="100%"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        visible="{= !${viewModel>Text} }"
+                    />
+                </template>
+            </Column>
+            <Column
+                width="150px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>admittedCostbyTheCommissionIfAny}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:Input
+                        value="{viewModel>Admitted_Cost}"
+                        liveChange="onDecimalNumberChange"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        visible="{= !${viewModel>Text} }"
+                    />
+                </template>
+            </Column>
+        </columns>
+    </TreeTable>
+</core:FragmentDefinition>

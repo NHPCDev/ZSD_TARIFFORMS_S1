@@ -1,0 +1,12 @@
+{
+    "cols": [
+        {
+            "label": "Profit Center ID",
+            "template": "Prctr"
+        },
+        {
+            "label": "Description",
+            "template": "Ktext"
+        }
+    ]
+}

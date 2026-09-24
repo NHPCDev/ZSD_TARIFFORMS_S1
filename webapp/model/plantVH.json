@@ -1,0 +1,12 @@
+{
+    "cols": [
+        {
+            "label": "Plant ID",
+            "template": "Werks"
+        },
+        {
+            "label": "Plant Name",
+            "template": "Name1"
+        }
+    ]
+}

@@ -1,0 +1,84 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+>
+    <VBox id="generalInfoVBox">
+        <f:SimpleForm
+            id="generalInfoForm"
+            editable="true"
+            layout="ColumnLayout"
+            columnsXL="2"
+            columnsL="2"
+            columnsM="2"
+            singleContainerFullSize="true"
+            binding="{viewModel>/Header}"
+        >
+            <f:content>
+
+                <core:Title id="idGenInfott1" />
+
+                <Label
+                    id="profitCenterLabel"
+                    text="{i18n>profitCenter}"
+                />
+                <Input
+                    id="profitCenterInput"
+                    value="{viewModel>Profit_Center}"
+                    editable="false"
+                />
+
+                <Label
+                    id="tariffPeriodLabel"
+                    text="{i18n>tariffPeriod}"
+                />
+                <Input
+                    id="tariffPeriodInput"
+                    value="{viewModel>Tariff_Period}"
+                    editable="false"
+                />
+
+                <Label
+                    id="tariffStageLabel"
+                    text="{i18n>tariffStage}"
+                />
+                <Input
+                    id="tariffStageInput"
+                    value="{viewModel>Tariff_Stage}"
+                    editable="false"
+                />
+
+                <Label
+                    id="plantStageLabel"
+                    text="{i18n>plantStage}"
+                />
+                <Input
+                    id="plantStageInput"
+                    value="{viewModel>Plant_Stage}"
+                    editable="false"
+                />
+
+                <Label
+                    id="plantVersionLabel"
+                    text="{i18n>Version}"
+                />
+                <Input
+                    id="plantVersionInput"
+                    value="{viewModel>Version}"
+                    editable="false"
+                />
+
+                <Label
+                    id="plantStatusLabel"
+                    text="{i18n>status}"
+                />
+                <Input
+                    id="plantStatusInput"
+                    value="{viewModel>Status}"
+                    editable="false"
+                />
+
+            </f:content>
+        </f:SimpleForm>
+    </VBox>
+</core:FragmentDefinition>

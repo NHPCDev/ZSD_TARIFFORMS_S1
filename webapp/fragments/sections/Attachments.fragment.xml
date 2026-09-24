@@ -1,0 +1,169 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+    xmlns:upload="sap.m.upload"
+    xmlns:plugins="sap.m.plugins"
+>
+    <VBox id="idTrfAttachVbox">
+        <Table
+            id="idTrfAttachTable"
+            sticky="ColumnHeaders,HeaderToolbar"
+            width="auto"
+            fixedLayout="false"
+            inset="false"
+            autoPopinMode="true"
+            hiddenInPopin="None"
+            items="{path:'viewModel>/Header/Attachments', templateShareable:true}"
+            updateFinished="onUploadTableFinished"
+        >
+            <headerToolbar>
+                <OverflowToolbar id="idTrfOverHdrTlbrUpload">
+                    <Title
+                        id="idTrfUploadTitle"
+                        text="{i18n>uploadAttachmentTitle}"
+                        level="H2"
+                    />
+                    <ToolbarSpacer id="idToolbarSpacerupload" />
+
+                    <upload:ActionsPlaceholder
+                        id="idUploadPlaceholder"
+                        placeholderFor="UploadButtonPlaceholder"
+                        visible="{viewModel>/editable}"
+                    />
+                </OverflowToolbar>
+            </headerToolbar>
+
+            <dependents>
+                <plugins:UploadSetwithTable
+                    id="idTrfUploadSetWthTble"
+                    actions="idUploadPlaceholder"
+                    multiple="true"
+                    fileTypes="pdf,png,jpg,xlsx,xls"
+                    maxFileNameLength="50"
+                    maxFileSize="5"
+                    fileNameLengthExceeded="onFileNameLengthExceed"
+                    fileSizeExceeded="onFileSizeExceed"
+                    fileTypeMismatch="onFileTypeMismatch"
+                    uploadCompleted="onUploadCompleted"
+                    onActivated="onPluginActivated"
+                    itemValidationHandler=".itemValidationCallback"
+                >
+                    <upload:UploadItemConfiguration
+                        id="idTrfUpldItmConf"
+                        fileNamePath="FileName"
+                        mediaTypePath="Mimetype"
+                        urlPath="Url"
+                        previewablePath="Previewable"
+                        fileSizePath="fileSize"
+                        isTrustedSourcePath="trustedSource"
+                    />
+                </plugins:UploadSetwithTable>
+            </dependents>
+
+            <columns>
+                <Column
+                    id="idTrfAttachFileNameCol"
+                    demandPopin="true"
+                    minScreenWidth="tablet"
+                    importance="High"
+                >
+                    <header>
+                        <Label
+                            id="idTrfAttachFileNameLbl"
+                            text="{i18n>fileNameCol}"
+                        />
+                    </header>
+                </Column>
+                <Column
+                    id="idTrfAttachFileTypeCol"
+                    demandPopin="true"
+                    minScreenWidth="tablet"
+                >
+                    <header>
+                        <Label
+                            id="idTrfAttachFileTypeLbl"
+                            text="{i18n>fileTypeCol}"
+                        />
+                    </header>
+                </Column>
+                <Column
+                    id="idTrfAttachFileUploadedByCol"
+                    demandPopin="true"
+                    minScreenWidth="tablet"
+                >
+                    <header>
+                        <Label
+                            id="idTrfAttachFileUploadedByLbl"
+                            text="{i18n>fileUploadedByCol}"
+                        />
+                    </header>
+                </Column>
+                <Column
+                    id="idTrfAttachFileUploadedOnCol"
+                    demandPopin="true"
+                    minScreenWidth="tablet"
+                >
+                    <header>
+                        <Label
+                            id="idTrfAttachFileUploadedOnLbl"
+                            text="{i18n>fileUploadedOnCol}"
+                        />
+                    </header>
+                </Column>
+                <Column
+                    id="idTrfAttachFileActionCol"
+                    hAlign="End"
+                    demandPopin="true"
+                    minScreenWidth="tablet"
+                    importance="High"
+                    visible="{= ${viewModel>/hindranceDetails/visible}}"
+                />
+            </columns>
+            <items>
+                <ColumnListItem id="idTrfUploadClmLstItm">
+                    <cells>
+                        <HBox id="idTrfUploadCellHbox">
+                            <core:Icon
+                                id="idTfrcellAttachIcon"
+                                size="2rem"
+                                src="{path:'viewModel>MimeType', formatter: '.formatter.formatAttachmentIcon'}"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom"
+                            />
+                            <VBox
+                                id="idTrfuploadCellVH"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom"
+                            >
+                                <Link
+                                    id="idTrfAttachFileNameLink"
+                                    text="{viewModel>FileName}"
+                                    press="openPreview"
+                                    visible="{= ${viewModel>Url} ? true : false}"
+                                />
+                                <Text
+                                    id="idTrfAttachFileNameTxt"
+                                    text="{viewModel>FileName}"
+                                    visible="{= ${viewModel>Url} ? false : true}"
+                                />
+                            </VBox>
+                        </HBox>
+
+                        <Text
+                            id="idTrfAttachFileTypeTxt"
+                            text="{viewModel>MimeType}"
+                        />
+                        <Text
+                            id="idTrfAttachFileUploadedByTxt"
+                            text="{viewModel>UploadedBy}"
+                        />
+                        <Text
+                            id="idTrfAttachFileUploadedOnTxt"
+                            text="{viewModel>UploadedOn}"
+                        />
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+    </VBox>
+</core:FragmentDefinition>

@@ -1,0 +1,269 @@
+<mvc:View
+    controllerName="com.nhpc.zsdtarifformss1.controller.Dashboard"
+    height="100%"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:svm="sap.ui.comp.smartvariants"
+>
+    <f:DynamicPage
+        id="idTrfDynamicPage"
+        headerExpanded="true"
+    >
+        <f:header>
+            <f:DynamicPageHeader id="idTrfDynamicPageHeader">
+                <f:content>
+                    <fb:FilterBar
+                        id="idTrfFilterbar"
+                        persistencyKey="myPersKey"
+                        useToolbar="false"
+                        search=".onDashboardFilterSearch"
+                        filterChange=".onFilterChange"
+                        afterVariantLoad=".onAfterVariantLoad"
+                        showClearOnFB="true"
+                        clear="onFilterClear"
+                    >
+                        <fb:filterGroupItems>
+                            <fb:FilterGroupItem
+                                id="idFilGrpItm1"
+                                name="TariffId"
+                                label="{i18n>filterTariffIdLabel}"
+                                groupName="Group1"
+                                visibleInFilterBar="true"
+                            >
+                                <fb:control>
+                                    <Input
+                                        width="100%"
+                                        id="requestNumberInput"
+                                        value="{viewModel>/filterData/TariffId}"
+                                        change="onInputChange"
+                                    />
+                                </fb:control>
+                            </fb:FilterGroupItem>
+
+                            <fb:FilterGroupItem
+                                id="idFilGrpItm2"
+                                name="ProfitCenter"
+                                label="{i18n>FilterLableProfitCenter}"
+                                groupName="Group2"
+                                visibleInFilterBar="true"
+                            >
+                                <fb:control>
+                                    <!-- <ComboBox id="idCmbFltrPf" width="100%"
+                                        selectedKey="{viewModel>/filterData/ProfitCenter}"
+                                        items="{viewModel>/profitCenterList}"
+                                        change="onComboBoxChange"
+                                    >
+                                        <core:Item id="idCmbItmFltrPf"
+                                            key="{viewModel>Key}"
+                                            text="{viewModel>Key}"
+                                        />
+                                       
+            
+                                    </ComboBox> -->
+                                    <Input
+                                        id="empIdInputFilter"
+                                        value="{viewModel>/filterData/ProfitCenter}"
+                                        showValueHelp="true"
+                                        app:valuehelp="profitCenterValueHelpRequest"
+                                        valueHelpRequest="onValueHelpRequest"
+                                        change="onValueHelpChange"
+                                    />
+                                </fb:control>
+                            </fb:FilterGroupItem>
+
+                            <fb:FilterGroupItem
+                                id="idFilGrpItmPlant"
+                                name="Plant"
+                                label="{i18n>filterPlantLabel}"
+                                groupName="Group3"
+                                visibleInFilterBar="true"
+                            >
+                                <fb:control>
+                                    <Input
+                                        id="idPlantFilter"
+                                        width="100%"
+                                        value="{viewModel>/filterData/Plant}"
+                                        showValueHelp="true"
+                                        app:valuehelp="plantValueHelpRequest"
+                                        valueHelpRequest="onValueHelpRequest"
+                                        change="onValueHelpChange"
+                                    />
+                                </fb:control>
+                            </fb:FilterGroupItem>
+
+                            <fb:FilterGroupItem
+                                id="idStatus"
+                                name="Status"
+                                label="{i18n>filterStatusLabel}"
+                                groupName="Group4"
+                                visibleInFilterBar="true"
+                            >
+                                <fb:control>
+                                    <ComboBox
+                                        id="idCmboxStatusFilter"
+                                        width="100%"
+                                        selectedKey="{viewModel>/filterData/Status}"
+                                        change="onComboBoxChange"
+                                        items="{/StatusSet}"
+                                    >
+                                        <core:Item
+                                            id="idCmboxItmStatusFilter"
+                                            key="{key}"
+                                            text="{status}"
+                                        />
+                                    </ComboBox>
+                                </fb:control>
+                            </fb:FilterGroupItem>
+                        </fb:filterGroupItems>
+                    </fb:FilterBar>
+                </f:content>
+            </f:DynamicPageHeader>
+        </f:header>
+        <f:content>
+            <VBox id="idDashboardVbox">
+                <Table
+                    id="idDashboardTable"
+                    mode="None"
+                    sticky="ColumnHeaders,HeaderToolbar"
+                    items="{
+                    path: '/DashboardSet'
+                }"
+                    alternateRowColors="true"
+                    growing="true"
+                    growingThreshold="20"
+                    updateFinished="onManageTaskTableUpdateFinish"
+                >
+                    <headerToolbar>
+                        <OverflowToolbar id="idOvrTlbrDash">
+                            <Title
+                                id="idDashboardTitle"
+                                text="{i18n>dashBoardTableTitle}"
+                            />
+                            <ToolbarSpacer id="idTlBrSpcrDash" />
+
+                            <Button
+                                id="idCreateNewReqBtn"
+                                text="{i18n>createNewBtnText}"
+                                press="handleCreateNewBtnPress"
+                                type="Emphasized"
+                                enabled="{viewModel>/isCreateAllowed}"
+                                icon="sap-icon://add"
+                            />
+                            <Button
+                                id="idBtnExport"
+                                type="Reject"
+                                text="{i18n>DownloadReport}"
+                                icon="sap-icon://excel-attachment"
+                                press="onExport"
+                            />
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column id="idColHdrDashComp1">
+                            <Text
+                                id="idColHdrTextTrfDash1"
+                                text="{i18n>tariffId}"
+                            />
+                        </Column>
+                        <Column id="idColHdrDashComp2">
+                            <Text
+                                id="idColHdrTextTrfDash2"
+                                text="{i18n>profitCenter}"
+                            />
+                        </Column>
+                        <Column id="idColHdrDashComp3">
+                            <Text
+                                id="idColHdrTextTrfDash3"
+                                text="{i18n>tariffPeriod}"
+                            />
+                        </Column>
+                        <Column id="idColHdrDashComp4">
+                            <Text
+                                id="idColHdrTextTrfDash4"
+                                text="{i18n>tariffStage}"
+                            />
+                        </Column>
+                        <Column id="idColHdrDashComp5">
+                            <Text
+                                id="idColHdrTextTrfDash5"
+                                text="{i18n>plantStage}"
+                            />
+                        </Column>
+                        <Column id="idColHdrDashComp6">
+                            <Text
+                                id="idColHdrTextTrfDash6"
+                                text="{i18n>version}"
+                            />
+                        </Column>
+
+                        <Column id="idColHdrDashComp7">
+                            <Text
+                                id="idColHdrTextTrfDash7"
+                                text="{i18n>status}"
+                            />
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem
+                            id="idClmLstItmDashComp"
+                            type="Navigation"
+                            press="handleOnItemPress"
+                        >
+                            <cells>
+                                <ObjectIdentifier
+                                    id="idcellValComp1"
+                                    title="{Tariff_ID}"
+                                />
+
+                                <Text
+                                    id="idcellValComp2"
+                                    text="{profitCenter}"
+                                />
+                                <!-- <ObjectIdentifier id="idcellValComp2" title="{LocationId}" text="{LocationDesc}" /> -->
+
+                                <!-- <ObjectIdentifier id="idcellValComp3" title="{DivisionId}" text="{DivisionDesc}" /> -->
+
+                                <Text
+                                    id="idcellValComp4"
+                                    text="{Tariff_Period}"
+                                />
+
+                                <Text
+                                    id="idcellValComp5"
+                                    text="{Tf_Stage_id}"
+                                />
+
+                                <Text
+                                    id="idcellValComp6"
+                                    text="{Plnt_Stage_id}"
+                                />
+                                <Text
+                                    id="idcellValComp7"
+                                    text="{Version}"
+                                />
+
+                                <!-- <ObjectIdentifier id="idcellValComp11" title="{AuthorizedBy}" text="{AuthorizedByPernr}" /> -->
+                                <ObjectStatus
+                                    id="idcellValComp12"
+                                    text="{
+                                        path:'Status',
+                                        formatter: '.formatter.formatStatusText'
+                                    }"
+                                    class="statusBoldText"
+                                    state="{
+                                        path:'Status',
+                                        formatter: '.formatter.formatStatusState'
+                                    }"
+                                />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </f:content>
+    </f:DynamicPage>
+</mvc:View>
