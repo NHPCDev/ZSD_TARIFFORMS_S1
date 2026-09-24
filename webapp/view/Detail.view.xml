@@ -173,7 +173,7 @@
                     </uxap:ObjectPageSection>
 
                     <!-- Attachments Section -->
-                    <uxap:ObjectPageSection
+                    <!-- <uxap:ObjectPageSection
                         id="idObjSecAttachments"
                         titleUppercase="false"
                         title="{i18n>uploadAttachmentSecHeader}"
@@ -192,7 +192,7 @@
                                 </uxap:blocks>
                             </uxap:ObjectPageSubSection>
                         </uxap:subSections>
-                    </uxap:ObjectPageSection>
+                    </uxap:ObjectPageSection> -->
 
                     <!-- History With Remarks Section -->
                     <!-- <uxap:ObjectPageSection  id="idObjSecHistory"

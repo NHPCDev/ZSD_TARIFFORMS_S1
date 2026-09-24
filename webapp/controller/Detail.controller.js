@@ -85,17 +85,17 @@ sap.ui.define([
         },
 
         //attachment
-        onPluginActivated: function (oEvent) {
-            this.oUploadPluginInstance = oEvent.getParameter("oPlugin");
-            var oUploadActionBtn = this.byId("idUploadPlaceholder"),
-                oUploadBtn = oUploadActionBtn.getAggregation("_actionButton");
+        // onPluginActivated: function (oEvent) {
+        //     this.oUploadPluginInstance = oEvent.getParameter("oPlugin");
+        //     var oUploadActionBtn = this.byId("idUploadPlaceholder"),
+        //         oUploadBtn = oUploadActionBtn.getAggregation("_actionButton");
 
-            oUploadBtn.setIcon("sap-icon://upload");
-            oUploadBtn.setStyle("Emphasized");
-            oUploadBtn.setIconFirst(true);
+        //     oUploadBtn.setIcon("sap-icon://upload");
+        //     oUploadBtn.setStyle("Emphasized");
+        //     oUploadBtn.setIconFirst(true);
 
 
-        },
+        // },
 
         // _loadCreateData: function () {
 
@@ -162,7 +162,7 @@ sap.ui.define([
                     var aForms = oHeader.Head_itemnav && oHeader.Head_itemnav.results ? oHeader.Head_itemnav.results : [];
                     oViewModel.setProperty("/Header/Forms", aForms);
                     console.log("Tariff Forms:", aForms);
-                    
+
                 }.bind(this),
 
                 error: function () {
