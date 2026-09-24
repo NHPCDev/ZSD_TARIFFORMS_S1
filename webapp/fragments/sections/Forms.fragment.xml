@@ -33,46 +33,35 @@
                 />
             </Column>
 
-            <Column
-                id="idColHdrDtlComp2"
-            >
+            <Column id="idColHdrDtlComp2">
                 <Text
                     id="idColHdrTxtDtlComp2"
                     text="{i18n>FormDesc}"
                 />
             </Column>
 
-            <Column
-                id="idColHdrDtlComp3"
-            >
+            <Column id="idColHdrDtlComp3">
                 <Text
                     id="idColHdrTxtDtlComp3"
                     text="{i18n>apllicable}"
                 />
             </Column>
 
-            <Column
-                id="idColHdrDtlComp4"
-            >
+            <Column id="idColHdrDtlComp4">
                 <Text
                     id="idColHdrTxtDtlComp4"
                     text="{i18n>Mandatory}"
                 />
             </Column>
 
-            <Column
-                id="idColHdrDtlComp5"
-            >
+            <Column id="idColHdrDtlComp5">
                 <Text
                     id="idColHdrTxtDtlComp5"
                     text="{i18n>fisicalYearLabel}"
                 />
             </Column>
 
-            <Column
-                id="idColHdrDtlComp6"
-
-            >
+            <Column id="idColHdrDtlComp6">
                 <Text
                     id="idColHdrTxtDtlComp6"
                     text="{i18n>FormStatusLabel}"
@@ -87,7 +76,6 @@
                 press="onFormDetailsPress"
             >
                 <cells>
-
                     <ObjectIdentifier
                         id="idFormId"
                         title="{viewModel>Form_id}"
@@ -100,13 +88,12 @@
 
                     <Text
                         id="idApplicable"
-                        text="{viewModel>Prov}"
+                        text="{viewModel>Applicable}"
                     />
 
-                    <CheckBox
+                    <Text
                         id="idMandatoryqw"
-                        selected="{= ${viewModel>Ztrue} === 'X'}"
-                        editable="{viewModel>/editable}"
+                        text="{viewModel>Mandatory}"
                     />
                     <Text
                         id="idFiscalYear"
@@ -117,7 +104,6 @@
                         id="idFormStatus"
                         text="{viewModel>Status}"
                     />
-
                 </cells>
             </ColumnListItem>
         </items>

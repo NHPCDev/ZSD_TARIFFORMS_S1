@@ -156,6 +156,13 @@ sap.ui.define([
                     console.log("Tariff data loaded successfully:", oHeader);
 
                     oViewModel.setProperty("/Header", oHeader);
+                    console.log("Header data set in viewModel:", oViewModel.getProperty("/Header"));
+
+                    // Generated tariff items
+                    var aForms = oHeader.Head_itemnav && oHeader.Head_itemnav.results ? oHeader.Head_itemnav.results : [];
+                    oViewModel.setProperty("/Header/Forms", aForms);
+                    console.log("Tariff Forms:", aForms);
+                    
                 }.bind(this),
 
                 error: function () {
