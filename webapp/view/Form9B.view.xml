@@ -38,9 +38,9 @@
                                             />
                                             <ObjectStatus
                                                 title="{i18n>status}"
-                                                text="{viewModel>/requestDetails/StatusText}"
+                                                text="{viewModel>/Status}"
                                                 class="sapMObjectStatusMedium statusBoldText"
-                                                state="{path:'viewModel>/requestDetails/Status',formatter:'.formatter.formatStatusState'}"
+                                                state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
                                             />
                                         </VBox>
                                     </HBox>
@@ -63,9 +63,9 @@
                                             />
                                             <ObjectStatus
                                                 title="{i18n>status}"
-                                                text="{viewModel>/requestDetails/StatusText}"
+                                                text="{viewModel>/Status}"
                                                 class="sapMObjectStatusMedium statusBoldText"
-                                                state="{path:'viewModel>/requestDetails/Status',formatter:'.formatter.formatStatusState'}"
+                                                state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
                                             />
                                         </VBox>
                                     </HBox>

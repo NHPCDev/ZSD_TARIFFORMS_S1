@@ -29,6 +29,7 @@ sap.ui.define([
 
             var oViewModel = this.getModel("viewModel");
             var sTariffId = oEvent.getParameter("arguments").tariffId;
+            this._tariffID = sTariffId;
 
             oViewModel.setProperty("/mode", "Display");
             // oViewModel.setProperty("/editable", false);
@@ -56,13 +57,17 @@ sap.ui.define([
             var oData = oContext.getObject();
             var sTariffId = oContext.getProperty("tariffId");
             var sFormId = oContext.getProperty("Form_id");
+            var sStatus = oContext.getProperty("Status");
+            let sFisicalYear = oContext.getProperty("Fisical_Year");
+            var sTariffID = this._tariffID
             // oViewModel.setProperty("/Header", oData);
             // Set mode
             oViewModel.setProperty("/mode", "Display");
             this.getRouter().navTo(`RouteForm${sFormId}`, {
-                tariffId: "New",
+                tariffId: sTariffID,
                 formId: sFormId,
-                Status: "New"
+                Fisical_Year: sFisicalYear,
+                Status: sStatus
             });
             MessageToast.show("Form Details Pressed for Tariff ID: " + sTariffId + ", Form ID: " + sFormId);
         },

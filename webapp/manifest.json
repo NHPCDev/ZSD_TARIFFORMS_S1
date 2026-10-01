@@ -122,14 +122,14 @@
         },
         {
           "name": "RouteForm9A",
-          "pattern": "Form9A/{tariffId}/{formId}/{Status}",
+          "pattern": "Form9A/{tariffId}/{formId}/{Fisical_Year}/{Status}",
           "target": [
             "TargetForm9A"
           ]
         },
         {
           "name": "RouteForm9B",
-          "pattern": "Form9B/{tariffId}/{formId}/{Status}",
+          "pattern": "Form9B/{tariffId}/{formId}/{Fisical_Year}/{Status}",
           "target": [
             "TargetForm9B"
           ]

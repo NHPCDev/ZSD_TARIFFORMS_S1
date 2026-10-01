@@ -38,9 +38,9 @@
                                             />
                                             <ObjectStatus
                                                 title="{i18n>status}"
-                                                text="{viewModel>/Header/Status}"
+                                                text="{viewModel>/Status}"
                                                 class="sapMObjectStatusMedium statusBoldText"
-                                                state="{path:'viewModel>/requestDetails/Status',formatter:'.formatter.formatStatusState'}"
+                                                state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
                                             />
                                         </VBox>
                                     </HBox>
@@ -63,9 +63,9 @@
                                             />
                                             <ObjectStatus
                                                 title="{i18n>status}"
-                                                text="{viewModel>/requestDetails/StatusText}"
+                                                text="{viewModel>/Status}"
                                                 class="sapMObjectStatusMedium statusBoldText"
-                                                state="{path:'viewModel>/requestDetails/Status',formatter:'.formatter.formatStatusState'}"
+                                                state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
                                             />
                                         </VBox>
                                     </HBox>
@@ -124,14 +124,14 @@
                             type="Critical"
                             press="handleSaveBtnPress"
                             icon="sap-icon://save"
-                            visible="{= ${viewModel>/requestDetails/Status} !== '02' }"
+                            visible="{= ${viewModel>/Status} !== 'Submitted' }"
                         />
                         <Button
                             text="{i18n>submitBtnText}"
                             type="Success"
                             press="handleSubmitBtnPress"
                             icon="sap-icon://create"
-                            visible="{= ${viewModel>/requestDetails/Status} !== '02' }"
+                            visible="{= ${viewModel>/Status} !== 'Submitted' }"
                         />
                     </OverflowToolbar>
                 </footer>
