@@ -167,21 +167,6 @@ sap.ui.define([
                 });
             },
 
-
-            // handleCreateTariffConfirm: function () {
-            //     if (!this._validateCreateTariff()) {
-            //         return;
-            //     }
-
-            //     this._setCreateTariffHeader();
-            //     this.getModel("viewModel").setProperty("/mode", "Create");
-
-            //     this.handleCreateTariffCancel();
-
-            //     this.getRouter().navTo("RouteDetail", {
-            //         tariffId: "NEW"
-            //     });
-            // },
             handleCreateTariffCancel: function () {
                 this.byId("idCreateTariffFormDialog").close();
             },

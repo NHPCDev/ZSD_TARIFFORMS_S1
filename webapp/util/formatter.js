@@ -51,6 +51,8 @@ sap.ui.define([
 
             switch (sStatus.toUpperCase()) {
 
+                case "NEW":
+                    return "New";
                 case "D":
                     return "Draft";
 
@@ -80,6 +82,23 @@ sap.ui.define([
 
                 default:
                     return sStatus;
+            }
+        },
+        formatTariffStageText: function (sText) {
+
+            if (!sText) {
+                return "";
+            }
+
+            switch (sText.toUpperCase()) {
+
+                case "PR":
+                    return "Provisional";
+                case "TR":
+                    return "Turing-up";
+
+                default:
+                    return sText;
             }
         },
 

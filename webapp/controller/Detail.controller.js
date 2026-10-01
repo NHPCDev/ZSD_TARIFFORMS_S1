@@ -23,24 +23,7 @@ sap.ui.define([
             this.getView().addStyleClass("sapUiSizeCompact");
 
         },
-        // _onRoutePatternMatched: function (oEvent) {
-        //     this.getModel().refresh();
-        //     var oViewModel = this.getModel("viewModel");
-        //     var oModel = this.getModel();
 
-        //     var sTariffId = oEvent.getParameter("arguments").tariffId;
-
-        //     if (sTariffId === "NEW") {
-        //         oViewModel.setProperty("/mode", "Create");
-        //         oViewModel.setProperty("/editable", true);
-
-        //         this._loadCreateData();
-        //     } else {
-        //         oViewModel.setProperty("/mode", "Display");
-        //         this._loadTariffData(sTariffId);
-        //     }
-
-        // },
         _onRoutePatternMatched: function (oEvent) {
             this.getModel().refresh();
 
@@ -48,7 +31,7 @@ sap.ui.define([
             var sTariffId = oEvent.getParameter("arguments").tariffId;
 
             oViewModel.setProperty("/mode", "Display");
-            oViewModel.setProperty("/editable", false);
+            // oViewModel.setProperty("/editable", false);
 
             this._loadTariffData(sTariffId);
         },
@@ -162,6 +145,9 @@ sap.ui.define([
                     var aForms = oHeader.Head_itemnav && oHeader.Head_itemnav.results ? oHeader.Head_itemnav.results : [];
                     oViewModel.setProperty("/Header/Forms", aForms);
                     console.log("Tariff Forms:", aForms);
+
+                    // Editable only when status is NOT Submitted
+                    oViewModel.setProperty("/editable", oHeader.Status !== "Submitted");
 
                 }.bind(this),
 

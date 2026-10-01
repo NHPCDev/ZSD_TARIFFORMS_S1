@@ -100,9 +100,22 @@
                         text="{viewModel>Fisical_Year}"
                     />
 
-                    <Text
+                    <!-- <Text
                         id="idFormStatus"
                         text="{viewModel>Status}"
+                    /> -->
+                    <ObjectStatus
+                        id="idFormStatus"
+                        text="{
+                                path:'viewModel>Status',
+                                formatter: '.formatter.formatStatusText'
+                            }"
+                                   
+                        class="statusBoldText"
+                        state="{
+                                path:'viewModel>Status',
+                                formatter: '.formatter.formatStatusState'
+                            }"
                     />
                 </cells>
             </ColumnListItem>

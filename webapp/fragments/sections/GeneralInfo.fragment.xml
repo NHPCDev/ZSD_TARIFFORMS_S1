@@ -3,9 +3,9 @@
     xmlns:core="sap.ui.core"
     xmlns:f="sap.ui.layout.form"
 >
-    <VBox id="generalInfoVBox">
+    <VBox id="generalInfoVBoxBase">
         <f:SimpleForm
-            id="generalInfoForm"
+            id="generalInfoFormBase"
             editable="true"
             layout="ColumnLayout"
             columnsXL="2"
@@ -16,64 +16,67 @@
         >
             <f:content>
 
-                <core:Title id="idGenInfott1" />
+                <core:Title id="idGenInfott1Base" />
 
                 <Label
-                    id="profitCenterLabel"
+                    id="profitCenterLabelBase"
                     text="{i18n>profitCenter}"
                 />
                 <Input
-                    id="profitCenterInput"
+                    id="profitCenterInputBase"
                     value="{viewModel>Profit_Center}"
                     editable="false"
                 />
 
                 <Label
-                    id="tariffPeriodLabel"
+                    id="tariffPeriodLabelBase"
                     text="{i18n>tariffPeriod}"
                 />
                 <Input
-                    id="tariffPeriodInput"
+                    id="tariffPeriodInputBase"
                     value="{viewModel>Tariff_Period}"
                     editable="false"
                 />
 
                 <Label
-                    id="tariffStageLabel"
+                    id="tariffStageLabelBase"
                     text="{i18n>tariffStage}"
                 />
                 <Input
-                    id="tariffStageInput"
-                    value="{viewModel>Tariff_Stage}"
+                    id="tariffStageInputBase"
                     editable="false"
+                     value="{ 
+                       path:'viewModel>Tariff_Stage',
+                       formatter:'.formatter.formatTariffStageText'
+                     }"
                 />
 
                 <Label
-                    id="plantStageLabel"
+                    id="plantStageLabelBase"
                     text="{i18n>plantStage}"
                 />
                 <Input
-                    id="plantStageInput"
-                    value="{viewModel>Plant_Stage}"
+                    id="plantStageInputBase"
                     editable="false"
+                    value='{viewModel>Plant_Stage}'
                 />
 
                 <Label
-                    id="plantVersionLabel"
+                    id="plantVersionLabelBase"
                     text="{i18n>Version}"
                 />
                 <Input
-                    id="plantVersionInput"
+                    id="plantVersionInputBase"
                     value="{viewModel>Version}"
                     editable="false"
                 />
 
                 <Label
-                    id="plantStatusLabel"
+                    id="plantStatusLabelBase"
                     text="{i18n>status}"
                 />
                 <Input
-                    id="plantStatusInput"
+                    id="plantStatusInputBase"
                     value="{viewModel>Status}"
                     editable="false"
                 />

@@ -48,7 +48,7 @@
                                     <!-- Display Mode -->
                                     <Title
                                         id="idHdtTitleEHdrHboxVboxT2"
-                                        text="{i18n>ObjectPageTitle} - {viewModel>/Header/tariffId}"
+                                        text="{i18n>ObjectPageTitle} - {viewModel>/Header/Tariff_ID}"
                                         visible="{= ${viewModel>/mode} === 'Display' }"
                                         wrapping="true"
                                     />
@@ -99,7 +99,7 @@
                                     <!-- Display Mode -->
                                     <Title
                                         id="idHdtTitleSHdrHboxVboxT2"
-                                        text="{i18n>ObjectPageTitle} - {viewModel>/Header/tariffId}"
+                                        text="{i18n>ObjectPageTitle} - {viewModel>/Header/Tariff_ID}"
                                         visible="{= ${viewModel>/mode} === 'Display' }"
                                         wrapping="true"
                                     />
