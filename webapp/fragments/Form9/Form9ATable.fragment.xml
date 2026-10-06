@@ -26,14 +26,16 @@
                 <m:Button
                     text="{i18n>addChild}"
                     icon="sap-icon://add"
-                    type="Emphasized"
+                    type="Accept"
                     press=".onForm9AAdd"
+                    visible="{= ${viewModel>/Status} !== 'Submitted' }"
                 />
                 <m:Button
                     text="{i18n>deleteChild}"
                     icon="sap-icon://delete"
                     type="Reject"
                     press=".onForm9ADelete"
+                    visible="{= ${viewModel>/Status} !== 'Submitted' }"
                 />
             </m:OverflowToolbar>
         </extension>
@@ -74,7 +76,7 @@
                         rows="3"
                         growing="false"
                         width="100%"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>
@@ -91,7 +93,7 @@
                     <m:Input
                         value="{viewModel>Head_Account}"
                         liveChange="onNumberInputChange"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>
@@ -107,8 +109,8 @@
                 <template>
                     <m:Input
                         value="{viewModel>Accural_Basis}"
-                        liveChange="onDecimalNumberChange"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        change="onDecimalNumberChange"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>
@@ -124,8 +126,8 @@
                 <template>
                     <m:Input
                         value="{viewModel>Discharge_Liabilty}"
-                        liveChange="onDecimalNumberChange"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        change="onDecimalNumberChange"
+                        editable="false"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>
@@ -141,8 +143,8 @@
                 <template>
                     <m:Input
                         value="{viewModel>Cash_Basis}"
-                        liveChange="onDecimalNumberChange"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        change="onDecimalNumberChange"
+                        editable="false"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>
@@ -158,8 +160,8 @@
                 <template>
                     <m:Input
                         value="{viewModel>Idc}"
-                        liveChange="onDecimalNumberChange"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        change="onDecimalNumberChange"
+                        editable="false"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>
@@ -175,7 +177,7 @@
                 <template>
                     <m:Input
                         value="{viewModel>Regulation}"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>
@@ -194,7 +196,7 @@
                         rows="3"
                         growing="false"
                         width="100%"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>
@@ -210,8 +212,8 @@
                 <template>
                     <m:Input
                         value="{viewModel>Admitted_Cost}"
-                        liveChange="onDecimalNumberChange"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        change="onDecimalNumberChange"
+                        editable="false"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>

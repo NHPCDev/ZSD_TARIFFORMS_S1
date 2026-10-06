@@ -33,100 +33,14 @@ sap.ui.define([
 			let [sStartYear, sEndYear] = sTariffPeriod.split("-");
 			let sPrevTariffPeriod = `${Number(sStartYear) - 5}-${sStartYear}`;
 			this._prevTariffPeriod = sPrevTariffPeriod;
-			let textA;
-			let textB;
-			let textC;
-			let textD;
-			if (sTariffStage === "PR") {
-				textA = `Left-Over Items already allowed by CERC in ${this._prevTariffPeriod}`;
-				textB = "Replacement of Assets under the original scope after Cut-Off date";
-				textC = "Assets beyond original scope after Cut-Off date";
-				textD = "Total";
-			} else {
-				textA = `Items allowed by CERC during ${sSelectedYear}`;
-				textB = `Allowed by CERC in different Years & but executed in FY ${sSelectedYear}`;
-				textC = `Items claimed as per actual site requirement in ${sSelectedYear}`;
-				textD = "Total";
-			}
 			if (sStatus === "NEW") {
 				const oForm9AData = {
 					catalog: {
-						Form9A: [
-							{
-								Sno: "0001",
-								Text: textA,
-								Form9Ahead_9AItem: [],
-								isParent: true
-							},
-							{
-								Sno: "0002",
-								Text: textB,
-								Form9Ahead_9AItem: [],
-								isParent: true
-							},
-							{
-								Sno: "0003",
-								Text: textC,
-								Form9Ahead_9AItem: [],
-								isParent: true
-							},
-							{
-								Sno: "0004",
-								Text: textD,
-								isParent: true,
-								isTotalParent: true,
-								Form9Ahead_9AItem: [
-									{
-										Sno: "",
-										SubSno: "",
-										Equipment: "Total",
-										isTotal: true,
-										Head_Account: "",
-										Accural_Basis: "",
-										Discharge_Liabilty: "",
-										Cash_Basis: "",
-										Idc: "",
-										Regulation: "",
-										Justification: "",
-										Admitted_Cost: ""
-									},
-									{
-										Sno: "",
-										SubSno: "",
-										Equipment: "Additional Capital Expenditure Eligible for Normal ROE",
-										isTotal: true,
-										Head_Account: "",
-										Accural_Basis: "",
-										Discharge_Liabilty: "",
-										Cash_Basis: "",
-										Idc: "",
-										Regulation: "",
-										Justification: "",
-										Admitted_Cost: ""
-									},
-									{
-										Sno: "",
-										SubSno: "",
-										Equipment: "Additional Capital Expenditure Eligible for Weighted Average  ROE",
-										isTotal: true,
-										Head_Account: "",
-										Accural_Basis: "",
-										Discharge_Liabilty: "",
-										Cash_Basis: "",
-										Idc: "",
-										Regulation: "",
-										Justification: "",
-										Admitted_Cost: ""
-									}
-								],
-								isParent: true,
-								isTotalParent: true
-							}
-						]
+						Form9A: []
 					}
 				};
 				oViewModel.setProperty("/catalog/Form9A", oForm9AData.catalog.Form9A);
-				this._loadForm9ABackendData();
+				this._loadForm9ABackendData(sSelectedYear, sTariffPeriod, sTariffStage);
 				oViewModel.setProperty("/canEdit", true);
 			}
 			else {
@@ -173,30 +87,6 @@ sap.ui.define([
 							: [];
 					const aForm9A = [];
 					aBackendParents.forEach(function (oBackendParent) {
-						// if (oBackendParent.Sno) {
-						// 	let Sno = oBackendParent.Sno;
-						// 	if (sTariffStage === "PR") {
-						// 		if (Sno === "0001") {
-						// 			oBackendParent.Text = `Left-Over Items already allowed by CERC in ${this._prevTariffPeriod}`;
-						// 		}
-						// 		if (Sno === "0002") {
-						// 			oBackendParent.Text = "Replacement of Assets under the original scope after Cut-Off date";
-						// 		}
-						// 		if (Sno === "0003") {
-						// 			oBackendParent.Text = "Assets beyond original scope after Cut-Off date";
-						// 		}
-						// 	} else {
-						// 		if (Sno === "0001") {
-						// 			oBackendParent.Text = `Items allowed by CERC during ${sSelectedYear}`;
-						// 		}
-						// 		if (Sno === "0002") {
-						// 			oBackendParent.Text = `Allowed by CERC in different Years & but executed in FY ${sSelectedYear}`;
-						// 		}
-						// 		if (Sno === "0003") {
-						// 			oBackendParent.Text = `Items claimed as per actual site requirement in ${sSelectedYear}`;
-						// 		}
-						// 	}
-						// }
 						const aBackendChildren =
 							oBackendParent.Form9AItem_SubItem &&
 								oBackendParent.Form9AItem_SubItem.results
@@ -216,126 +106,63 @@ sap.ui.define([
 									Regulation: oChild.Regulation,
 									Justification: oChild.Justification,
 									Admitted_Cost: oChild.Admitted_Cost,
-									isEquipment: true
+									IsSubTotal: oChild.IsSubTotal
 								};
 							});
-						aUIChildren.push(
-							this._createForm9ASubTotal()
-						);
 						aForm9A.push({
 							Sno: oBackendParent.Sno,
 							Text: oBackendParent.Text,
 							Form9Ahead_9AItem: aUIChildren,
-							isParent: true
+							isParent: true,
+							IsTotal: oBackendParent.IsTotal
 						});
 					}.bind(this));
-					aForm9A.push({
-						Sno: "0004",
-						Text: "Total",
-						Form9Ahead_9AItem: [
-							{
-								Sno: "",
-								SubSno: "",
-								Equipment: "Total",
-								Head_Account: "",
-								Accural_Basis: "",
-								Discharge_Liabilty: "",
-								Cash_Basis: "",
-								Idc: "",
-								Regulation: "",
-								Justification: "",
-								Admitted_Cost: "",
-								isTotal: true
-							},
-							{
-								Sno: "",
-								SubSno: "",
-								Equipment: "Additional Capital Expenditure Eligible for Normal ROE",
-								isTotal: true,
-								Head_Account: "",
-								Accural_Basis: "",
-								Discharge_Liabilty: "",
-								Cash_Basis: "",
-								Idc: "",
-								Regulation: "",
-								Justification: "",
-								Admitted_Cost: ""
-							},
-							{
-								Sno: "",
-								SubSno: "",
-								Equipment: "Additional Capital Expenditure Eligible for Weighted Average  ROE",
-								isTotal: true,
-								Head_Account: "",
-								Accural_Basis: "",
-								Discharge_Liabilty: "",
-								Cash_Basis: "",
-								Idc: "",
-								Regulation: "",
-								Justification: "",
-								Admitted_Cost: ""
-							}
-						],
-						isParent: true,
-						isTotalParent: true
-					});
 					oViewModel.setProperty("/catalog/Form9A", aForm9A);
 				}.bind(this),
 				error: function (oError) {
 
 				}.bind(this)
-
 			});
 		},
 
-		_loadForm9ABackendData: function () {
+		_loadForm9ABackendData: function (sSelectedYear, sTariffPeriod, sTariffStage) {
 			const oModel = this.getModel();
 			const oViewModel = this.getModel("viewModel");
+			let aFilters = [
+				new Filter("Fisical_Year", FilterOperator.EQ, sSelectedYear),
+				new Filter("Form_id", FilterOperator.EQ, "9A"),
+				new Filter("Tarrif_period", FilterOperator.EQ, sTariffPeriod),
+				new Filter("Tarrif_stage", FilterOperator.EQ, sTariffStage)
+			]
 			oModel.read("/EquipmentSet", {
+				filters: aFilters,
+				urlParameters: "$expand=Equipment_h_item",
 				success: function (oData) {
 					const aEquipment = oData.results || [];
 					const aForm9A = oViewModel.getProperty("/catalog/Form9A") || [];
-					aForm9A.forEach(function (oSection) {
-						if (oSection.Sno === "0004") {
-							return;
-						}
-						const aMatchingEquipment = aEquipment.filter(function (oItem) {
-							return oItem.Sno === oSection.Sno;
-						});
-						oSection.Form9Ahead_9AItem = aMatchingEquipment.map(function (oItem) {
-							return {
-								Sno: oItem.Sno,
-								SubSno: oItem.Sub_Sno,
-								Equipment: oItem.Text1,
-								Head_Account: oItem.Head_Work,
-								Accural_Basis: "",
-								Discharge_Liabilty: "",
-								Cash_Basis: "",
-								Idc: "",
-								Regulation: "",
-								Justification: "",
-								Admitted_Cost: "",
-								isEquipment: true
-							};
-						});
-						oSection.Form9Ahead_9AItem.push({
-							Sno: "",
-							SubSno: "",
-							Equipment: "Sub-Total",
-
-							Head_Account: "",
-							Accural_Basis: "",
-							Discharge_Liabilty: "",
-							Cash_Basis: "",
-							Idc: "",
-							Regulation: "",
-							Justification: "",
-							Admitted_Cost: "",
-
-							isSubtotal: true
+					let sItems = [];
+					aEquipment.forEach(function (oEquipment) {
+						const aItems =
+							oEquipment.Equipment_h_item &&
+								oEquipment.Equipment_h_item.results
+								? oEquipment.Equipment_h_item.results
+								: [];
+						sItems.push({
+							Sno: oEquipment.Sno,
+							Text: oEquipment.Head_work,
+							IsTotal: oEquipment.IsTotal,
+							Form9Ahead_9AItem: aItems.map(function (oItem) {
+								return {
+									SubSno: oItem.Sub_Sno,
+									Head_Account: oItem.Head_Account,
+									Equipment: oItem.Head_work,
+									Discharge_Liabilty: "0.00",
+									IsSubTotal: oItem.IsSubTotal
+								};
+							})
 						});
 					});
-					oViewModel.setProperty("/catalog/Form9A", aForm9A);
+					oViewModel.setProperty("/catalog/Form9A", sItems);
 				}.bind(this),
 				error: function (oError) {
 					console.error("Error loading EquipmentSet:", oError);
@@ -382,13 +209,13 @@ sap.ui.define([
 				sParentPath = sParentPath.split("/Form9Ahead_9AItem/")[0];
 			}
 			const oParent = oViewModel.getProperty(sParentPath);
-			if (oParent.Sno === "0004" || oParent.isTotalParent) {
+			if (oParent.IsTotal) {
 				messenger.error(oResourceBundle.getText("cannotAddChildUnderTotal"))
 				return;
 			}
 			let aChildren = oViewModel.getProperty(sParentPath + "/Form9Ahead_9AItem") || [];
 			const iChildCount = aChildren.filter(function (oChild) {
-				return !oChild.isSubtotal && !oChild.isTotal;
+				return !oChild.IsSubTotal && !oChild.IsTotal;
 			}).length;
 			const oNewChild = {
 				Sno: oParent.Sno,
@@ -404,7 +231,7 @@ sap.ui.define([
 				Admitted_Cost: ""
 			};
 			const iSubtotalIndex = aChildren.findIndex(function (oChild) {
-				return oChild.isSubtotal;
+				return oChild.IsSubTotal;
 			});
 			let iNewChildIndex;
 			if (iSubtotalIndex >= 0) {
@@ -475,7 +302,7 @@ sap.ui.define([
 				messenger.error(oResourceBundle.getText("childRowsError"));
 				return;
 			}
-			if (oSelectedObject.isSubtotal || oSelectedObject.isTotal) {
+			if (oSelectedObject.IsSubTotal || oSelectedObject.IsTotal) {
 				messenger.error(oResourceBundle.getText("cannotBeRelated"));
 				return;
 			}
@@ -491,7 +318,7 @@ sap.ui.define([
 			aChildren.splice(iChildIndex, 1);
 			let iSubSno = 1;
 			aChildren.forEach(function (oChild) {
-				if (!oChild.isSubtotal && !oChild.isTotal) {
+				if (!oChild.IsSubTotal && !oChild.IsTotal) {
 					oChild.SubSno = String(iSubSno++).padStart(3, "0");
 				}
 			});
@@ -559,16 +386,9 @@ sap.ui.define([
 			const sTariffID = this._TariffID;
 			const aParents = [];
 			aForm9AData.forEach(function (oParent) {
-				//We are removing Total header
-				if (oParent.isTotalParent) {
-					return;
-				}
 				const aSubItems = [];
 				const aChildren = oParent.Form9Ahead_9AItem || [];
 				aChildren.forEach(function (oChild) {
-					if (oChild.isSubtotal || oChild.isTotal) {
-						return;
-					}
 					aSubItems.push({
 						Sub_Sno: oChild.SubSno,
 						Equipment: oChild.Equipment,
@@ -579,14 +399,16 @@ sap.ui.define([
 						Idc: oChild.Idc,
 						Regulation: oChild.Regulation,
 						Justification: oChild.Justification,
-						Admitted_Cost: oChild.Admitted_Cost
+						Admitted_Cost: oChild.Admitted_Cost,
+						IsSubTotal: oChild.IsSubTotal
 					});
 				});
 				aParents.push({
 					Sno: oParent.Sno,
 					Text: oParent.Text,
 					Tarrif_id: sTariffID,
-					Form9AItem_SubItem: aSubItems
+					Form9AItem_SubItem: aSubItems,
+					IsTotal: oParent.IsTotal
 				});
 			});
 			return {
@@ -597,22 +419,6 @@ sap.ui.define([
 				Form_id: "9A",
 				Form9Ahead_9AItem: aParents
 			};
-		},
-		_createForm9ASubTotal: function () {
-			return {
-				Sno: "",
-				SubSno: "",
-				Equipment: "Sub-Total",
-				Head_Account: "",
-				Accural_Basis: "",
-				Discharge_Liabilty: "",
-				Cash_Basis: "",
-				Idc: "",
-				Regulation: "",
-				Justification: "",
-				Admitted_Cost: "",
-				isSubtotal: true
-			};
-		},
+		}
 	});
 });

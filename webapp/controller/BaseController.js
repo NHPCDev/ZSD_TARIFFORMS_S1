@@ -112,7 +112,7 @@ sap.ui.define([
                     }
                 }.bind(this));
             },
-             getText: function (sKey, aArgs) {
+            getText: function (sKey, aArgs) {
                 return this.getResourceBundle().getText(sKey, aArgs);
             },
             // getDisplayCaseDetails: function (applicationNo, Status) {
@@ -1324,6 +1324,431 @@ sap.ui.define([
                     }.bind(this)
                 });
             },
+            onFileNameLengthExceed: function () {
+                var oResourceBundle = this.getResourceBundle();
+                messenger.error(oResourceBundle.getText("FileLengthExceededErrMsg"));
+            },
+            onFileSizeExceed: function () {
+                var oResourceBundle = this.getResourceBundle();
+                messenger.error(oResourceBundle.getText("fileSizeExceedErrorMsg"));
+            },
+
+            onFileTypeMismatch: function () {
+                var oResourceBundle = this.getResourceBundle();
+                messenger.error(oResourceBundle.getText("fileTypeMisMatchErrorMsg"));
+            },
+            itemValidationCallback: function (oItemInfo) {
+
+                var oItemDetails = oItemInfo.oItem,
+                    oViewModel = this.getModel("viewModel"),
+                    aAttachmentList = oViewModel.getProperty("/attachmentList") || [];
+
+                if (
+                    oItemDetails.getFileName() !== null &&
+                    oItemDetails.getFileName() !== undefined &&
+                    oItemDetails.getFileName().endsWith(".msg")
+                ) {
+                    let fileType = "application/vnd.ms-outlook";
+                    oItemDetails.setMediaType(fileType);
+                }
+
+                aAttachmentList.push({
+                    "Filename": oItemDetails.getFileName(),
+                    "Mimetype": oItemDetails.getMediaType(),
+                    "CreatedBy": sap.ushell.Container.getUser().getFullName(),
+                    "CreatedOn": this.formatDate(new Date())
+                });
+
+                oViewModel.setProperty("/attachmentList", aAttachmentList);
+
+                const { oItem } = oItemInfo;
+
+                var oItemPromise = new Promise((resolve, reject) => {
+
+                    this.oItemsProcessor.push({
+                        item: oItem,
+                        resolve: resolve,
+                        reject: reject
+                    });
+
+                });
+
+                // Required
+                this.checkMalwareValidation(oItemInfo);
+
+                return oItemPromise;
+            },
+            checkMalwareValidation: function (oItemInfo) {
+
+                var oResourceBundle = this.getResourceBundle(),
+                    oFileObject = oItemInfo.oItem.getFileObject();
+
+                if (oFileObject) {
+
+                    var reader = new FileReader();
+
+                    reader.onload = function (event) {
+
+                        var aArrayBuffer = event.currentTarget.result;
+                        var sBinaryString = this.convertArratBufferToBinary(aArrayBuffer);
+
+                        var sUrl = this.getBaseURL() + "/malware_api/scan";
+
+                        BusyIndicator.show();
+
+                        jQuery.ajax({
+                            url: sUrl,
+                            type: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            data: sBinaryString,
+
+                            success: function (oResp) {
+
+                                if (oResp.malwareDetected) {
+                                    this.removeMalwareFile();
+                                    messenger.error(
+                                        oResourceBundle.getText("malwareFileDetectedErrorMsg")
+                                    );
+                                } else {
+                                    BusyIndicator.hide();
+                                }
+
+                            }.bind(this),
+
+                            error: function () {
+
+                                BusyIndicator.hide();
+                                this.removeMalwareFile();
+
+                                messenger.error(
+                                    oResourceBundle.getText("malwareScanFailedErrorMsg")
+                                );
+
+                            }.bind(this)
+                        });
+
+                    }.bind(this);
+
+                    reader.readAsArrayBuffer(oFileObject);
+                }
+            },
+
+            convertArratBufferToBinary: function (aArrayBufferObject) {
+
+                var binary = "";
+
+                const bytes = new Uint8Array(aArrayBufferObject);
+                const len = bytes.byteLength;
+
+                for (let i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+
+                return binary;
+            },
+
+            removeMalwareFile: function () {
+
+                var oViewModel = this.getModel("viewModel"),
+                    aAttachmentList = oViewModel.getProperty("/attachmentList");
+
+                aAttachmentList.pop();
+                this.oItemsProcessor.pop();
+
+                oViewModel.setProperty("/attachmentList", aAttachmentList);
+                oViewModel.refresh();
+
+                BusyIndicator.hide();
+            },
+
+            onUploadComplete: function (oEvent) {
+
+                var oResourceBundle = this.getResourceBundle(),
+                    staus = oEvent.getParameter("status");
+
+                this.iUploadCount = this.iUploadCount + 1;
+
+                if (staus === 500 || staus === 400 || staus === 415) {
+
+                    this.isAttachmentFail = true;
+
+                    var oParser = new DOMParser();
+                    var oResponse = oParser.parseFromString(
+                        oEvent.getParameter("response"),
+                        "text/xml"
+                    );
+
+                    var aMessages = oResponse.getElementsByTagName("message");
+
+                    if (aMessages && aMessages.length > 0) {
+                        var sMessage = aMessages[0].innerHTML;
+                        this.sUploadMessage = sMessage + "\n";
+                    }
+                }
+
+                if (this.iNoOfAttachments === this.iUploadCount) {
+
+                    BusyIndicator.hide();
+
+                    if (this.isAttachmentFail) {
+
+                        messenger.error(this.sUploadMessage);
+
+                    } else {
+
+                        if (this.sStatusCode === "DF") {
+
+                            messenger.success(
+                                oResourceBundle.getText(
+                                    "SavedMessage"
+                                ),
+                                function () {
+                                    this.onNavBack();
+                                }.bind(this)
+                            );
+
+                        } else if (this.sStatusCode === "SB") {
+
+                            messenger.success(
+                                oResourceBundle.getText(
+                                    "SubmittedMessage"
+                                ),
+                                function () {
+                                    this.onNavBack();
+                                }.bind(this)
+                            );
+
+                        }
+                    }
+                }
+            },
+            fileUpload: function (aAttachmentList, sButtonPress) {
+                var oModel = this.getModel(),
+                    aAttachments = this.oItemsProcessor,
+                    oResourceBundle = this.getResourceBundle(),
+                    sUrl = oModel.sServiceUrl;
+                console.log("OData Service URL:", sUrl);
+                var oViewModel = this.getModel("viewModel");
+                let sApplicationNo = oViewModel.getProperty("/ApplicationNo");
+                let sPernr = oViewModel.getProperty("/formDetails/Pernr");
+                var sType = "";
+                // //Set the Message
+                var sMessage = "";
+                if (sButtonPress === 'Save') {
+                    sMessage = oResourceBundle.getText("SavedSuccessMsg");
+                }
+                else if (sButtonPress === 'Submit') {
+                    sMessage = oResourceBundle.getText("SubmittedSuccessMsg");
+                }
+                //Loop And upload the files
+                if (aAttachments && aAttachments.length > 0) {
+                    this.iNoOfAttachments = aAttachments.length;
+                    var sAttachmentLength = aAttachments.length;
+                    for (var i = 0; i < aAttachments.length; i++) {
+                        var oAttachment = aAttachments[i].item;
+                        oAttachment.addHeaderField(new sap.ui.core.Item({
+                            key: "slug",
+                            text: sApplicationNo + "/" + sPernr + "/" + oAttachment.getFileName()
+                        }));
+                        oAttachment.addHeaderField(new sap.ui.core.Item({
+                            key: "X-CSRF-Token",
+                            text: oModel.getSecurityToken()
+                        }));
+                        console.log(oModel.getSecurityToken());
+                        this.oUploadPlugin.setUploadUrl(sUrl + "/AttachmentSet");
+
+                        sAttachmentLength = sAttachmentLength - 1;
+                        aAttachments[i].resolve(oAttachment);
+                        console.log("Service URL:", sUrl);
+                        console.log("Upload URL:", sUrl + "/AttachmentSet");
+                        console.log("CSRF Token:", oModel.getSecurityToken());
+                        console.log("Application No:", sApplicationNo);
+                        console.log("Pernr:", sPernr);
+                        console.log("File Name:", oAttachment.getFileName());
+                        console.log("File Size:", oAttachment.getFileObject().size);
+                        console.log("File Type:", oAttachment.getMediaType());
+                        console.log(
+                            "Slug:",
+                            sApplicationNo + "/" + sPernr + "/" + oAttachment.getFileName()
+                        );
+                    }
+                }
+
+                else {
+                    messenger.success(sMessage, function () {
+                        this.getRouter().navTo("RouteDashboard", {}, {}, true);
+                    }.bind(this));
+                }
+            },
+            getBaseURL: function () {
+                var appId = this.getOwnerComponent().getManifestEntry("/sap.app/id");
+                var appPath = appId.replaceAll(".", "/");
+                var appModulePath = jQuery.sap.getModulePath(appPath);
+                return appModulePath;
+            },
+            openPreview: function (oEvent) {
+                const oSource = oEvent.getSource();
+                const oBindingContext = oSource.getBindingContext("viewModel");
+
+                if (oBindingContext && this.oUploadPlugin) {
+                    this.oUploadPlugin.openFilePreview(oBindingContext);
+                }
+            },
+
+            readAttachmentsData: function () {
+                var oViewModel = this.getView().getModel("viewModel"),
+                    oModel = this.getModel(),
+                    sApplicationNo = oViewModel.getProperty("/ApplicationNo"),
+                    sPernr = oViewModel.getProperty("/formDetails/Pernr");
+                var aFilters = [];
+                aFilters.push(new Filter("ApplicationNo", FilterOperator.EQ, sApplicationNo));
+                aFilters.push(new Filter("Pernr", FilterOperator.EQ, sPernr));
+                aFilters.push(new Filter("Form", FilterOperator.EQ, "5"));
+                BusyIndicator.show();
+                oModel.read(`/AttachmentSet`, {
+                    filters: aFilters,
+                    success: function (oResp) {
+                        if (oResp.results && oResp.results.length > 0) {
+                            for (var i = 0; i < oResp.results.length; i++) {
+                                var sFileName = oResp.results[i].Filename;
+                                var sDocId = oResp.results[i].DocID;
+                                var sApplicationNo = oResp.results[i].ApplicationNo;
+                                var sPernr = oResp.results[i].Pernr;
+
+                                oResp.results[i].previewable = true;
+                                oResp.results[i].trustedSource = true;
+                                oResp.results[i].Url = this.getDownloadUrl(sApplicationNo, sPernr, sFileName, sDocId);
+                            }
+                        }
+                        BusyIndicator.hide();
+                        oViewModel.setProperty("/attachmentList", oResp.results);
+                    }.bind(this),
+                    error: function (oError) {
+                        BusyIndicator.hide();
+                        oViewModel.setProperty("/attachmentList", []);
+                        messenger.error(JSON.parse(oError.responseText).error.message.value);
+                    }.bind(this)
+                });
+
+            },
+
+            getDownloadUrl: function (sApplicationNo, sPernr, sFileName, sDocId) {
+                var oModel = this.getModel();
+                var sUrl = oModel.sServiceUrl + "/AttachmentSet(ApplicationNo='" + sApplicationNo + "',Pernr='" + sPernr + "',Form='" + '5' + "')/$value";
+                return sUrl;
+            },
+
+            onRemoveAttachment: function (oEvent) {
+                var oSource = oEvent.getSource();
+                const oContext = oSource.getBindingContext("viewModel");
+                this.removeItem(oContext);
+            },
+            removeItem: function (oContext) {
+                var oResourceBundle = this.getResourceBundle(),
+                    oViewModel = this.getModel("viewModel"),
+                    sPath = oContext.getPath(),
+                    sFileName = oViewModel.getProperty(sPath + "/Filename"),
+                    sTitle = oResourceBundle.getText("CONFIRM_TITLE");
+
+                var sMessage = oResourceBundle.getText(
+                    "removeDocumentWarningMsg",
+                    sFileName
+                );
+                messenger.confirm(sTitle, sMessage, "Confirm", null, function () {
+                    if (sPath.split("/")[2]) {
+                        var index = sPath.split("/")[2];
+                        var data = oViewModel.getProperty("/attachmentList");
+                        this.oItemsProcessor.splice(index, 1);
+                        data.splice(index, 1);
+                        oViewModel.setProperty("/attachmentList", data);
+                        oViewModel.refresh(true);
+                    }
+
+                }.bind(this));
+            },
+            onDeleteAttachment: function (oEvent) {
+
+                var oSource = oEvent.getSource();
+                const oContext = oSource.getBindingContext("viewModel");
+
+                var oResourceBundle = this.getResourceBundle(),
+                    oViewModel = this.getModel("viewModel"),
+                    sPath = oContext.getPath(),
+                    objectAtt = oViewModel.getProperty(sPath),
+                    sFileName = oViewModel.getProperty(sPath + "/Filename"),
+                    sTitle = oResourceBundle.getText("CONFIRM_TITLE");
+
+                var sMessage = oResourceBundle.getText(
+                    "deleteDocumentWarningMsg",
+                    sFileName
+                );
+
+                messenger.confirm(sTitle, sMessage, "Confirm", null, function () {
+                    this.deleteAttachment(objectAtt);
+                }.bind(this));
+            },
+
+            deleteAttachment: function (objectAtt) {
+                var oResourceBundle = this.getResourceBundle(),
+                    oModel = this.getModel();
+                var that = this;
+                var sUrl = oModel.createKey("/AttachmentSet", {
+                    ApplicationNo: objectAtt.ApplicationNo,
+                    Pernr: objectAtt.Pernr,
+                    Form: "5"
+                });
+
+                BusyIndicator.show();
+
+                oModel.remove(sUrl, {
+                    success: function () {
+
+                        BusyIndicator.hide();
+                        that.readAttachmentsData();
+
+                        messenger.success(
+                            oResourceBundle.getText("postAttDelSuccMessage")
+                        );
+
+                    }.bind(this),
+
+                    error: function (oError) {
+
+                        BusyIndicator.hide();
+
+                        messenger.error(
+                            JSON.parse(oError.responseText).error.message.value
+                        );
+
+                    }.bind(this)
+                });
+            },
+
+            onUploadTableFinished: function () {
+                var oViewModel = this.getModel("viewModel"),
+                    aAttachmentList = oViewModel.getProperty("/attachmentList") || [],
+                    iCount = aAttachmentList.length;
+                var sText = "Document (" + iCount + ")";
+                this.byId("idAttachmentCount").setText(sText);
+            },
+            onPluginActivated: function (oEvent) {
+
+                this.oItemsProcessor = [];
+                this.iNoOfAttachments = 0;
+                this.iUploadCount = 0;
+                this.sUploadMessage = "";
+
+                this.oUploadPlugin = oEvent.getParameter("oPlugin");
+
+                var oUploadActionBtn = this.byId("uploadButton"),
+                    oUploadBtn = oUploadActionBtn.getAggregation("_actionButton");
+
+                oUploadBtn.setIcon("sap-icon://upload");
+                oUploadBtn.setStyle("Emphasized");
+                oUploadBtn.setIconFirst(true);
+            },
             onNumberInputChange: function (oEvent) {
                 let sValue = oEvent.getParameter("value");
                 var oControl = oEvent.getSource();
@@ -1335,32 +1760,20 @@ sap.ui.define([
             onDecimalNumberChange: function (oEvent) {
                 var oControl = oEvent.getSource();
                 var sValue = oEvent.getParameter("value") || "";
-
                 oControl.setValueState("None");
                 oControl.setValueStateText("");
-
-                // Only numbers and dot
                 sValue = sValue.replace(/[^0-9.]/g, "");
-
-                // Don't allow "." as first character
                 if (sValue.startsWith(".")) {
                     sValue = "";
                 }
-
-                // Only one dot
                 var iDotIndex = sValue.indexOf(".");
-
                 if (iDotIndex !== -1) {
                     var sIntegerPart = sValue.substring(0, iDotIndex);
                     var sDecimalPart = sValue.substring(iDotIndex + 1);
-
                     sDecimalPart = sDecimalPart.replace(/\./g, "");
                     sDecimalPart = sDecimalPart.substring(0, 2);
-
                     sValue = sIntegerPart + "." + sDecimalPart;
                 }
-
-                // Remove leading zeros
                 if (sValue.includes(".")) {
                     var aParts = sValue.split(".");
                     aParts[0] = aParts[0].replace(/^0+(?=\d)/, "");
@@ -1368,95 +1781,81 @@ sap.ui.define([
                 } else {
                     sValue = sValue.replace(/^0+(?=\d)/, "");
                 }
-
                 oControl.setValue(sValue);
-
-                // Get the property name from the binding
                 var sBindingPath = oControl.getBindingPath("value");
-
-                var aCalculationFields = [
-                    "Accural_Basis",
-                    "Discharge_Liabilty",
-                    "Cash_Basis",
-                    "Idc",
-                    "Admitted_Cost"
-                ];
-
-                if (!aCalculationFields.includes(sBindingPath)) {
+                if (!sBindingPath) {
                     return;
                 }
-
-                // Update model
                 var oContext = oControl.getBindingContext("viewModel");
-
                 if (oContext) {
                     oContext.getModel().setProperty(
                         oContext.getPath() + "/" + sBindingPath,
                         sValue
                     );
                 }
-
-                // Debounce
-                clearTimeout(this._decimalChangeTimer);
-
-                this._decimalChangeTimer = setTimeout(function () {
-                    this._calculateForm9ATotals(sBindingPath);
-                }.bind(this), 700);
+                this._calculateForm9ATotals();
             },
-
-            _calculateForm9ATotals: function (sField) {
+            _calculateForm9ATotals: function () {
                 const oViewModel = this.getModel("viewModel");
                 const aForm9A = oViewModel.getProperty("/catalog/Form9A") || [];
-
-                let fGrandTotal = 0;
-
-                aForm9A.forEach(function (oSection) {
-                    if (oSection.Sno === "0004") {
-                        return;
-                    }
-
-                    const aChildren = oSection.Form9Ahead_9AItem || [];
-                    let fSubtotal = 0;
-
-                    aChildren.forEach(function (oChild) {
-                        if (oChild.isSubtotal || oChild.isTotal) {
-                            return;
+                const aFields = ["Accural_Basis", "Discharge_Liabilty", "Idc", "Admitted_Cost"];
+                aFields.forEach(function (sField) {
+                    const oSectionTotals = {};
+                    aForm9A.forEach(function (oSection) {
+                        const aChildren = oSection.Form9Ahead_9AItem || [];
+                        let fSubtotal = 0;
+                        aChildren.forEach(function (oChild) {
+                            if (oChild.IsSubTotal === "X" || oChild.IsTotal === "X") {
+                                return;
+                            }
+                            const fValue = parseFloat(oChild[sField]);
+                            if (!isNaN(fValue)) {
+                                fSubtotal += fValue;
+                            }
+                            if (sField === "Accural_Basis" || sField === "Discharge_Liabilty") {
+                                const fAccural = parseFloat(oChild.Accural_Basis) || 0;
+                                const fDischarge = parseFloat(oChild.Discharge_Liabilty) || 0;
+                                oChild.Cash_Basis = (fAccural - fDischarge).toFixed(2);
+                            }
+                        });
+                        oSectionTotals[oSection.Sno] = fSubtotal;
+                        const oSubtotal = aChildren.find(function (oChild) {
+                            return oChild.IsSubTotal === "X";
+                        });
+                        if (oSubtotal) {
+                            oSubtotal[sField] = fSubtotal.toFixed(2);
+                            if (sField === "Accural_Basis" || sField === "Discharge_Liabilty") {
+                                const fAccural = parseFloat(oSubtotal.Accural_Basis) || 0;
+                                const fDischarge = parseFloat(oSubtotal.Discharge_Liabilty) || 0;
+                                oSubtotal.Cash_Basis = (fAccural - fDischarge).toFixed(2);
+                            }
                         }
-
-                        const fValue = parseFloat(oChild[sField]);
-
-                        if (!isNaN(fValue)) {
-                            fSubtotal += fValue;
-                        }
                     });
-
-                    const oSubtotal = aChildren.find(function (oChild) {
-                        return oChild.isSubtotal === true;
+                    const oTotalSection = aForm9A.find(function (oSection) {
+                        return oSection.IsTotal === "X";
                     });
-
-                    if (oSubtotal) {
-                        oSubtotal[sField] = fSubtotal.toFixed(2);
+                    if (oTotalSection) {
+                        (oTotalSection.Form9Ahead_9AItem || []).forEach(function (oTotalRow) {
+                            let fTotal = 0;
+                            if (oTotalRow.SubSno === "0001") {
+                                fTotal = Object.values(oSectionTotals).reduce(function (sum, value) {
+                                    return sum + value;
+                                }, 0);
+                            } else if (oTotalRow.SubSno === "0002") {
+                                fTotal = (oSectionTotals["0001"] || 0) + (oSectionTotals["0002"] || 0);
+                            } else if (oTotalRow.SubSno === "0003") {
+                                fTotal = oSectionTotals["0003"] || 0;
+                            }
+                            oTotalRow[sField] = fTotal.toFixed(2);
+                        });
+                        (oTotalSection.Form9Ahead_9AItem || []).forEach(function (oTotalRow) {
+                            const fAccural = parseFloat(oTotalRow.Accural_Basis) || 0;
+                            const fDischarge = parseFloat(oTotalRow.Discharge_Liabilty) || 0;
+                            oTotalRow.Cash_Basis = (fAccural - fDischarge).toFixed(2);
+                        });
                     }
-
-                    fGrandTotal += fSubtotal;
                 });
-
-                const oTotalSection = aForm9A.find(function (oSection) {
-                    return oSection.Sno === "0004";
-                });
-
-                if (oTotalSection) {
-                    const oTotalRow = (oTotalSection.Form9Ahead_9AItem || []).find(function (oChild) {
-                        return oChild.isTotal === true;
-                    });
-
-                    if (oTotalRow) {
-                        oTotalRow[sField] = fGrandTotal.toFixed(2);
-                    }
-                }
-
                 oViewModel.setProperty("/catalog/Form9A", aForm9A);
             }
-
         });
     });

@@ -19,6 +19,9 @@ server:
           - path: /sap
             url: http://vhnpddnhci.sap.nhpc.in:44300
             destination: s4hanadest
+          - path: /malware_api
+            destination: malwarescandest
+            pathPrefix: /
     - name: fiori-tools-appreload
       afterMiddleware: compression
       configuration:

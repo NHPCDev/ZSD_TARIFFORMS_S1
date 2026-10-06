@@ -1,0 +1,149 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:upload="sap.m.upload"
+    xmlns:plugins="sap.m.plugins"
+    xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <VBox>
+        <Table
+            id="idUpload"
+            sticky="ColumnHeaders,HeaderToolbar"
+            width="auto"
+            fixedLayout="false"
+            inset="false"
+            autoPopinMode="true"
+            hiddenInPopin="None"
+            items="{path: 'viewModel>/attachmentList', templateShareable: false}"
+            updateFinished="onUploadTableFinished"
+        >
+            <headerToolbar>
+                <OverflowToolbar>
+                    <Title
+                        id="idAttachmentCount"
+                        text="{i18n>attachmentCountTitle}"
+                        level="H2"
+                    />
+                    <ToolbarSpacer />
+                    <upload:ActionsPlaceholder
+                        id="uploadButton"
+                        placeholderFor="UploadButtonPlaceholder"
+                        visible="{viewModel>/canEdit}"
+                    />
+                </OverflowToolbar>
+            </headerToolbar>
+            <dependents>
+                <plugins:UploadSetwithTable
+                    uploadUrl="/sap/opu/odata/SAP/ZSD_TARRIF_SRV/AttachmentSet"
+                    multiple="false"
+                    actions="uploadButton"
+                    fileTypes="pdf,jpg,png,xlsx,xls,docx"
+                    maxFileNameLength="50"
+                    maxFileSize="1"
+                    fileNameLengthExceeded="onFileNameLengthExceed"
+                    fileSizeExceeded="onFileSizeExceed"
+                    fileTypeMismatch="onFileTypeMismatch"
+                    itemValidationHandler=".itemValidationCallback"
+                    uploadCompleted="onUploadComplete"
+                    onActivated="onPluginActivated"                    
+                >
+                    <upload:UploadItemConfiguration
+                        fileNamePath="Filename"
+                        mediaTypePath="Mimetype"
+                        urlPath="Url"
+                        previewablePath="previewable"
+                        isTrustedSourcePath="trustedSource"
+                    />
+                </plugins:UploadSetwithTable>
+            </dependents>
+
+            <columns>
+                <Column
+                    demandPopin="true"
+                    minScreenWidth="tablet"
+                    importance="High"
+                >
+                    <header>
+                        <Label text="{i18n>fileNameCol}" />
+                    </header>
+                </Column>
+                <Column
+                    demandPopin="true"
+                    minScreenWidth="tablet"
+                >
+                    <header>
+                        <Label text="{i18n>fileTypeCol}" />
+                    </header>
+                </Column>
+                <Column
+                    demandPopin="true"
+                    minScreenWidth="tablet"
+                >
+                    <header>
+                        <Label text="{i18n>fileUploadedByCol}" />
+                    </header>
+                </Column>
+                <Column
+                    demandPopin="true"
+                    minScreenWidth="tablet"
+                >
+                    <header>
+                        <Label text="{i18n>fileUploadedOnCol}" />
+                    </header>
+                </Column>
+                <Column
+                    hAlign="End"
+                    demandPopin="true"
+                    minScreenWidth="tablet"
+                    importance="High"
+                    visible="{= ${viewModel>/WorkProjectionDetail/visible}}"
+                />
+            </columns>
+            <items>
+                <ColumnListItem>
+                    <cells>
+                        <HBox>
+                            <core:Icon
+                                size="2rem"
+                                src="{path: 'viewModel>Mimetype', formatter: '.formatter.formatAttachmentIcon'}"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom"
+                            />
+                            <VBox
+                                class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom"
+                            >
+                                <Link
+                                    text="{viewModel>Filename}"
+                                    press="openPreview"
+                                    visible="{= ${viewModel>Url} ? true : false }"
+                                />
+                                <Text
+                                    text="{viewModel>Filename}"
+                                    visible="{= ${viewModel>Url} ? false : true }"
+                                />
+                            </VBox>
+                        </HBox>
+                        <Text text="{viewModel>Mimetype}" />
+                        <Text text="{viewModel>CreatedBy}" />
+                        <Text text="{viewModel>CreatedOn}" />
+                        <HBox>
+                            <Button
+                                icon="sap-icon://delete"
+                                type="Transparent"
+                                press="onRemoveAttachment"
+                                visible="{= !${viewModel>Url} &amp;&amp; ${viewModel>/formDetails/Status} !== 'Submitted' }"
+                            />
+                            <Button
+                                icon="sap-icon://delete"
+                                type="Transparent"
+                                press="onDeleteAttachment"
+                                visible="{= !!${viewModel>Url} &amp;&amp; ${viewModel>/formDetails/Status} !== 'Submitted' }"
+                            />
+                        </HBox>
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+    </VBox>
+</core:FragmentDefinition>
