@@ -33,100 +33,14 @@ sap.ui.define([
 			let [sStartYear, sEndYear] = sTariffPeriod.split("-");
 			let sPrevTariffPeriod = `${Number(sStartYear) - 5}-${sStartYear}`;
 			this._prevTariffPeriod = sPrevTariffPeriod;
-			let textA;
-			let textB;
-			let textC;
-			let textD;
-			if (sTariffStage === "PR") {
-				textA = `Left-Over Items already allowed by CERC in ${this._prevTariffPeriod}`;
-				textB = "Replacement of Assets under the original scope after Cut-Off date";
-				textC = "Assets beyond original scope after Cut-Off date";
-				textD = "Total";
-			} else {
-				textA = `Items allowed by CERC during ${sSelectedYear}`;
-				textB = `Allowed by CERC in different Years & but executed in FY ${sSelectedYear}`;
-				textC = `Items claimed as per actual site requirement in ${sSelectedYear}`;
-				textD = "Total";
-			}
 			if (sStatus === "NEW") {
 				const oForm9BData = {
 					catalog: {
-						Form9B: [
-							{
-								Sno: "0001",
-								Text: textA,
-								Form9Bhead_9BItem: [],
-								isParent: true
-							},
-							{
-								Sno: "0002",
-								Text: textB,
-								Form9Bhead_9BItem: [],
-								isParent: true
-							},
-							{
-								Sno: "0003",
-								Text: textC,
-								Form9Bhead_9BItem: [],
-								isParent: true
-							},
-							{
-								Sno: "0004",
-								Text: textD,
-								isParent: true,
-								isTotalParent: true,
-								Form9Bhead_9BItem: [
-									{
-										Sno: "",
-										SubSno: "",
-										Equipment: "Total",
-										isTotal: true,
-										Head_Account: "",
-										Accural_Basis: "",
-										Discharge_Liabilty: "",
-										Cash_Basis: "",
-										Idc: "",
-										Regulation: "",
-										Justification: "",
-										Admitted_Cost: ""
-									},
-									{
-										Sno: "",
-										SubSno: "",
-										Equipment: "Additional Capital Expenditure Eligible for Normal ROE",
-										isTotal: true,
-										Head_Account: "",
-										Accural_Basis: "",
-										Discharge_Liabilty: "",
-										Cash_Basis: "",
-										Idc: "",
-										Regulation: "",
-										Justification: "",
-										Admitted_Cost: ""
-									},
-									{
-										Sno: "",
-										SubSno: "",
-										Equipment: "Additional Capital Expenditure Eligible for Weighted Average  ROE",
-										isTotal: true,
-										Head_Account: "",
-										Accural_Basis: "",
-										Discharge_Liabilty: "",
-										Cash_Basis: "",
-										Idc: "",
-										Regulation: "",
-										Justification: "",
-										Admitted_Cost: ""
-									}
-								],
-								isParent: true,
-								isTotalParent: true
-							}
-						]
+						Form9B: []
 					}
 				};
 				oViewModel.setProperty("/catalog/Form9B", oForm9BData.catalog.Form9B);
-				this._loadForm9BBackendData();
+				this._loadForm9BBackendData(sSelectedYear, sTariffPeriod, sTariffStage);
 				oViewModel.setProperty("/canEdit", true);
 			}
 			else {
@@ -155,10 +69,10 @@ sap.ui.define([
 					sFiscalYear
 				)
 			];
-			oModel.read("/Form9BheadSet", {
+			oModel.read("/Form9BHeadSet", {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "Form9Bhead_9BItem/Form9BItem_SubItem"
+					"$expand": "Form9bheaditem/Form9BItem_SubItem"
 				},
 				success: function (oData) {
 					const aBackendHeaders = oData.results || [];
@@ -167,36 +81,12 @@ sap.ui.define([
 					}
 					const oBackendHeader = aBackendHeaders[0];
 					const aBackendParents =
-						oBackendHeader.Form9Bhead_9BItem &&
-							oBackendHeader.Form9Bhead_9BItem.results
-							? oBackendHeader.Form9Bhead_9BItem.results
+						oBackendHeader.Form9bheaditem &&
+							oBackendHeader.Form9bheaditem.results
+							? oBackendHeader.Form9bheaditem.results
 							: [];
 					const aForm9B = [];
 					aBackendParents.forEach(function (oBackendParent) {
-						if (oBackendParent.Sno) {
-							let Sno = oBackendParent.Sno;
-							if (sTariffStage === "PR") {
-								if (Sno === "0001") {
-									oBackendParent.Text = `Left-Over Items already allowed by CERC in ${this._prevTariffPeriod}`;
-								}
-								if (Sno === "0002") {
-									oBackendParent.Text = "Replacement of Assets under the original scope after Cut-Off date";
-								}
-								if (Sno === "0003") {
-									oBackendParent.Text = "Assets beyond original scope after Cut-Off date";
-								}
-							} else {
-								if (Sno === "0001") {
-									oBackendParent.Text = `Items allowed by CERC during ${sSelectedYear}`;
-								}
-								if (Sno === "0002") {
-									oBackendParent.Text = `Allowed by CERC in different Years & but executed in FY ${sSelectedYear}`;
-								}
-								if (Sno === "0003") {
-									oBackendParent.Text = `Items claimed as per actual site requirement in ${sSelectedYear}`;
-								}
-							}
-						}
 						const aBackendChildren =
 							oBackendParent.Form9BItem_SubItem &&
 								oBackendParent.Form9BItem_SubItem.results
@@ -216,126 +106,64 @@ sap.ui.define([
 									Regulation: oChild.Regulation,
 									Justification: oChild.Justification,
 									Admitted_Cost: oChild.Admitted_Cost,
-									isEquipment: true
+									IsSubTotal: oChild.IsSubTotal
 								};
 							});
-						aUIChildren.push(
-							this._createForm9BSubTotal()
-						);
 						aForm9B.push({
 							Sno: oBackendParent.Sno,
 							Text: oBackendParent.Text,
-							Form9Bhead_9BItem: aUIChildren,
-							isParent: true
+							Form9bheaditem: aUIChildren,
+							isParent: true,
+							IsTotal: oBackendParent.IsTotal
 						});
 					}.bind(this));
-					aForm9B.push({
-						Sno: "0004",
-						Text: "Total",
-						Form9Bhead_9BItem: [
-							{
-								Sno: "",
-								SubSno: "",
-								Equipment: "Total",
-								Head_Account: "",
-								Accural_Basis: "",
-								Discharge_Liabilty: "",
-								Cash_Basis: "",
-								Idc: "",
-								Regulation: "",
-								Justification: "",
-								Admitted_Cost: "",
-								isTotal: true
-							},
-							{
-								Sno: "",
-								SubSno: "",
-								Equipment: "Additional Capital Expenditure Eligible for Normal ROE",
-								isTotal: true,
-								Head_Account: "",
-								Accural_Basis: "",
-								Discharge_Liabilty: "",
-								Cash_Basis: "",
-								Idc: "",
-								Regulation: "",
-								Justification: "",
-								Admitted_Cost: ""
-							},
-							{
-								Sno: "",
-								SubSno: "",
-								Equipment: "Additional Capital Expenditure Eligible for Weighted Average  ROE",
-								isTotal: true,
-								Head_Account: "",
-								Accural_Basis: "",
-								Discharge_Liabilty: "",
-								Cash_Basis: "",
-								Idc: "",
-								Regulation: "",
-								Justification: "",
-								Admitted_Cost: ""
-							}
-						],
-						isParent: true,
-						isTotalParent: true
-					});
 					oViewModel.setProperty("/catalog/Form9B", aForm9B);
 				}.bind(this),
 				error: function (oError) {
 
 				}.bind(this)
-
 			});
 		},
 
-		_loadForm9BBackendData: function () {
+		_loadForm9BBackendData: function (sSelectedYear, sTariffPeriod, sTariffStage) {
 			const oModel = this.getModel();
 			const oViewModel = this.getModel("viewModel");
+			let aFilters = [
+				new Filter("Fisical_Year", FilterOperator.EQ, sSelectedYear),
+				new Filter("Form_id", FilterOperator.EQ, "9B"),
+				new Filter("Tarrif_period", FilterOperator.EQ, sTariffPeriod),
+				new Filter("Tarrif_stage", FilterOperator.EQ, sTariffStage)
+			]
 			oModel.read("/EquipmentSet", {
+				filters: aFilters,
+				urlParameters: "$expand=Equipment_h_item",
 				success: function (oData) {
 					const aEquipment = oData.results || [];
 					const aForm9B = oViewModel.getProperty("/catalog/Form9B") || [];
-					aForm9B.forEach(function (oSection) {
-						if (oSection.Sno === "0004") {
-							return;
-						}
-						const aMatchingEquipment = aEquipment.filter(function (oItem) {
-							return oItem.Sno === oSection.Sno;
-						});
-						oSection.Form9Bhead_9BItem = aMatchingEquipment.map(function (oItem) {
-							return {
-								Sno: oItem.Sno,
-								SubSno: oItem.SubSno,
-								Equipment: oItem.Text1,
-								Head_Account: oItem.Head_Work,
-								Accural_Basis: "",
-								Discharge_Liabilty: "",
-								Cash_Basis: "",
-								Idc: "",
-								Regulation: "",
-								Justification: "",
-								Admitted_Cost: "",
-								isEquipment: true
-							};
-						});
-						oSection.Form9Bhead_9BItem.push({
-							Sno: "",
-							SubSno: "",
-							Equipment: "Sub-Total",
-
-							Head_Account: "",
-							Accural_Basis: "",
-							Discharge_Liabilty: "",
-							Cash_Basis: "",
-							Idc: "",
-							Regulation: "",
-							Justification: "",
-							Admitted_Cost: "",
-
-							isSubtotal: true
+					let sItems = [];
+					aEquipment.forEach(function (oEquipment) {
+						const aItems =
+							oEquipment.Equipment_h_item &&
+								oEquipment.Equipment_h_item.results
+								? oEquipment.Equipment_h_item.results
+								: [];
+						sItems.push({
+							Sno: oEquipment.Sno,
+							Text: oEquipment.Head_work,
+							IsTotal: oEquipment.IsTotal,
+							Form9bheaditem: aItems.map(function (oItem) {
+								return {
+									SubSno: oItem.Sub_Sno,
+									Head_Account: oItem.Head_Account,
+									Equipment: oItem.Head_work,
+									Discharge_Liabilty: "0.00",
+									IsSubTotal: oItem.IsSubTotal
+								};
+							})
 						});
 					});
-					oViewModel.setProperty("/catalog/Form9B", aForm9B);
+					debugger;
+					oViewModel.setProperty("/catalog/Form9B", sItems);
 				}.bind(this),
 				error: function (oError) {
 					console.error("Error loading EquipmentSet:", oError);
@@ -377,18 +205,18 @@ sap.ui.define([
 				return;
 			}
 			let sParentPath = oContext.getPath();
-			const bParentSelected = !sParentPath.includes("/Form9Bhead_9BItem/");
+			const bParentSelected = !sParentPath.includes("/Form9bheaditem/");
 			if (!bParentSelected) {
-				sParentPath = sParentPath.split("/Form9Bhead_9BItem/")[0];
+				sParentPath = sParentPath.split("/Form9bheaditem/")[0];
 			}
 			const oParent = oViewModel.getProperty(sParentPath);
-			if (oParent.Sno === "0004" || oParent.isTotalParent) {
+			if (oParent.IsTotal) {
 				messenger.error(oResourceBundle.getText("cannotAddChildUnderTotal"))
 				return;
 			}
-			let aChildren = oViewModel.getProperty(sParentPath + "/Form9Bhead_9BItem") || [];
+			let aChildren = oViewModel.getProperty(sParentPath + "/Form9bheaditem") || [];
 			const iChildCount = aChildren.filter(function (oChild) {
-				return !oChild.isSubtotal && !oChild.isTotal;
+				return !oChild.IsSubTotal && !oChild.IsTotal;
 			}).length;
 			const oNewChild = {
 				Sno: oParent.Sno,
@@ -404,7 +232,7 @@ sap.ui.define([
 				Admitted_Cost: ""
 			};
 			const iSubtotalIndex = aChildren.findIndex(function (oChild) {
-				return oChild.isSubtotal;
+				return oChild.IsSubTotal;
 			});
 			let iNewChildIndex;
 			if (iSubtotalIndex >= 0) {
@@ -415,7 +243,7 @@ sap.ui.define([
 				iNewChildIndex = aChildren.length - 1;
 			}
 			oViewModel.setProperty(
-				sParentPath + "/Form9Bhead_9BItem",
+				sParentPath + "/Form9bheaditem",
 				aChildren
 			);
 			oTable.clearSelection();
@@ -428,7 +256,7 @@ sap.ui.define([
 					const oRowContext = oTable.getContextByIndex(i);
 					if (oRowContext &&
 						oRowContext.getPath() ===
-						sParentPath + "/Form9Bhead_9BItem/" + iNewChildIndex) {
+						sParentPath + "/Form9bheaditem/" + iNewChildIndex) {
 						iNewRowIndex = i;
 						break;
 					}
@@ -444,7 +272,7 @@ sap.ui.define([
 							oRow.getBindingContext("viewModel");
 						if (oRowContext &&
 							oRowContext.getPath() ===
-							sParentPath + "/Form9Bhead_9BItem/" + iNewChildIndex) {
+							sParentPath + "/Form9bheaditem/" + iNewChildIndex) {
 							const aCells = oRow.getCells();
 							if (aCells[1]) {
 								aCells[1].focus();
@@ -471,19 +299,19 @@ sap.ui.define([
 			}
 			const sPath = oContext.getPath();
 			const oSelectedObject = oContext.getObject();
-			if (!sPath.includes("/Form9Bhead_9BItem/")) {
+			if (!sPath.includes("/Form9bheaditem/")) {
 				messenger.error(oResourceBundle.getText("childRowsError"));
 				return;
 			}
-			if (oSelectedObject.isSubtotal || oSelectedObject.isTotal) {
+			if (oSelectedObject.IsSubTotal || oSelectedObject.IsTotal) {
 				messenger.error(oResourceBundle.getText("cannotBeRelated"));
 				return;
 			}
-			const aParts = sPath.split("/Form9Bhead_9BItem/");
+			const aParts = sPath.split("/Form9bheaditem/");
 			const sParentPath = aParts[0];
 			const iChildIndex = parseInt(aParts[1], 10);
 			let aChildren = oViewModel.getProperty(
-				sParentPath + "/Form9Bhead_9BItem"
+				sParentPath + "/Form9bheaditem"
 			);
 			if (!aChildren || isNaN(iChildIndex)) {
 				return;
@@ -491,12 +319,12 @@ sap.ui.define([
 			aChildren.splice(iChildIndex, 1);
 			let iSubSno = 1;
 			aChildren.forEach(function (oChild) {
-				if (!oChild.isSubtotal && !oChild.isTotal) {
+				if (!oChild.IsSubTotal && !oChild.IsTotal) {
 					oChild.SubSno = String(iSubSno++).padStart(3, "0");
 				}
 			});
 			oViewModel.setProperty(
-				sParentPath + "/Form9Bhead_9BItem",
+				sParentPath + "/Form9bheaditem",
 				aChildren
 			);
 			oTable.clearSelection();
@@ -512,7 +340,7 @@ sap.ui.define([
 			let sText = oResourceBundle.getText("CONFIRM_TEXT_DRAFT_REQUEST_9B", sFiscalYear);
 			messenger.confirm(sTitle, sText, "Confirm", null, function () {
 				BusyIndicator.show(0);
-				oModel.create("/Form9BheadSet", aPayload, {
+				oModel.create("/Form9BHeadSet", aPayload, {
 					success: function (oData) {
 						messenger.success(oResourceBundle.getText("form9BDraftSuccess", sFiscalYear), () => {
 							this.getRouter().navTo("RouteDetail", {
@@ -532,12 +360,16 @@ sap.ui.define([
 			let sFiscalYear = this._FiscalYear;
 			let sTariffID = this._TariffID;
 			let oResourceBundle = this.getResourceBundle();
+			let isValid = this.validateItems();
+			if (!isValid) {
+				return;
+			}
 			let aPayload = this.getPayload("Submitted");
 			let sTitle = oResourceBundle.getText("CONFIRM_TITLE");
 			let sText = oResourceBundle.getText("CONFIRM_TEXT_FINAL_REQUEST_9B", sFiscalYear);
 			messenger.confirm(sTitle, sText, "Confirm", null, function () {
 				BusyIndicator.show(0);
-				oModel.create("/Form9BheadSet", aPayload, {
+				oModel.create("/Form9BHeadSet", aPayload, {
 					success: function (oData) {
 						messenger.success(oResourceBundle.getText("form9BSubmitSuccess", sFiscalYear), () => {
 							this.getRouter().navTo("RouteDetail", {
@@ -559,16 +391,9 @@ sap.ui.define([
 			const sTariffID = this._TariffID;
 			const aParents = [];
 			aForm9BData.forEach(function (oParent) {
-				//We are removing Total header
-				if (oParent.isTotalParent) {
-					return;
-				}
 				const aSubItems = [];
-				const aChildren = oParent.Form9Bhead_9BItem || [];
+				const aChildren = oParent.Form9bheaditem || [];
 				aChildren.forEach(function (oChild) {
-					if (oChild.isSubtotal || oChild.isTotal) {
-						return;
-					}
 					aSubItems.push({
 						Sub_Sno: oChild.SubSno,
 						Equipment: oChild.Equipment,
@@ -579,13 +404,16 @@ sap.ui.define([
 						Idc: oChild.Idc,
 						Regulation: oChild.Regulation,
 						Justification: oChild.Justification,
-						Admitted_Cost: oChild.Admitted_Cost
+						Admitted_Cost: oChild.Admitted_Cost,
+						IsSubTotal: oChild.IsSubTotal
 					});
 				});
 				aParents.push({
 					Sno: oParent.Sno,
 					Text: oParent.Text,
-					Form9BItem_SubItem: aSubItems
+					Tarrif_id: sTariffID,
+					Form9BItem_SubItem: aSubItems,
+					IsTotal: oParent.IsTotal
 				});
 			});
 			return {
@@ -593,24 +421,368 @@ sap.ui.define([
 				Tarrif_id: sTariffID,
 				Text: "",
 				Status: sStatus,
-				Form9Bhead_9BItem: aParents
+				Form_id: "9B",
+				Form9bheaditem: aParents
 			};
 		},
-		_createForm9BSubTotal: function () {
-			return {
-				Sno: "",
-				SubSno: "",
-				Equipment: "Sub-Total",
-				Head_Account: "",
-				Accural_Basis: "",
-				Discharge_Liabilty: "",
-				Cash_Basis: "",
-				Idc: "",
-				Regulation: "",
-				Justification: "",
-				Admitted_Cost: "",
-				isSubtotal: true
-			};
+		validateItems: function () {
+			const oViewModel = this.getModel("viewModel");
+			const aParents = oViewModel.getProperty("/catalog/Form9B") || [];
+			let oResourceBundle = this.getResourceBundle();
+			let bValid = true;
+			aParents.forEach(function (oParent) {
+				const aChildren = oParent.Form9bheaditem || [];
+				aChildren.forEach(function (oChild) {
+
+					// Don't validate subtotal rows
+					if (oChild.IsSubTotal === "X") {
+						return;
+					}
+
+					// Equipment
+					if (!this._validateField(
+						oChild,
+						"Equipment",
+						"_EquipmentState",
+						"_EquipmentStateText",
+						oResourceBundle.getText("headOfWorkMandatory")
+					)) {
+						bValid = false;
+					}
+
+					// Head Account
+					if (!this._validateField(
+						oChild,
+						"Head_Account",
+						"_HeadAccountState",
+						"_HeadAccountStateText",
+						oResourceBundle.getText("headOfAccountMandatory")
+					)) {
+						bValid = false;
+					}
+
+					// Accrual Basis
+					if (!this._validateField(
+						oChild,
+						"Accural_Basis",
+						"_AccuralBasisState",
+						"_AccuralBasisStateText",
+						oResourceBundle.getText("accuralBasisMandatory")
+					)) {
+						bValid = false;
+					}
+
+					// Regulation
+					if (!this._validateField(
+						oChild,
+						"Regulation",
+						"_RegulationState",
+						"_RegulationStateText",
+						oResourceBundle.getText("regulationMandatory")
+					)) {
+						bValid = false;
+					}
+
+					// Justification
+					if (!this._validateField(
+						oChild,
+						"Justification",
+						"_JustificationState",
+						"_JustificationStateText",
+						oResourceBundle.getText("justificationMandatory")
+					)) {
+						bValid = false;
+					}
+				}, this);
+			}, this);
+			oViewModel.refresh(true);
+			if (!bValid) {
+				messenger.error(oResourceBundle.getText("pleaseFillAllMandatoryFields"));
+			}
+			return bValid;
 		},
+		_validateField: function (
+			oItem,
+			sProperty,
+			sStateProperty,
+			sStateTextProperty,
+			sErrorText
+		) {
+			const sValue = oItem[sProperty];
+			if (
+				sValue === null ||
+				sValue === undefined ||
+				String(sValue).trim() === ""
+			) {
+				oItem[sStateProperty] = "Error";
+				oItem[sStateTextProperty] = sErrorText;
+				return false;
+			}
+			oItem[sStateProperty] = "None";
+			oItem[sStateTextProperty] = "";
+			return true;
+		},
+		onDecimalNumberChange: function (oEvent) {
+			var oControl = oEvent.getSource();
+			var sValue = oEvent.getParameter("value") || "";
+			oControl.setValueState("None");
+			oControl.setValueStateText("");
+			sValue = sValue.replace(/[^0-9.]/g, "");
+			if (sValue.startsWith(".")) {
+				sValue = "";
+			}
+			var iDotIndex = sValue.indexOf(".");
+			if (iDotIndex !== -1) {
+				var sIntegerPart = sValue.substring(0, iDotIndex);
+				var sDecimalPart = sValue.substring(iDotIndex + 1);
+				sDecimalPart = sDecimalPart.replace(/\./g, "");
+				sDecimalPart = sDecimalPart.substring(0, 2);
+				sValue = sIntegerPart + "." + sDecimalPart;
+			}
+			if (sValue.includes(".")) {
+				var aParts = sValue.split(".");
+				aParts[0] = aParts[0].replace(/^0+(?=\d)/, "");
+				sValue = aParts[0] + "." + aParts[1];
+			} else {
+				sValue = sValue.replace(/^0+(?=\d)/, "");
+			}
+			oControl.setValue(sValue);
+			var sBindingPath = oControl.getBindingPath("value");
+			if (!sBindingPath) {
+				return;
+			}
+			var oContext = oControl.getBindingContext("viewModel");
+			if (oContext) {
+				oContext.getModel().setProperty(
+					oContext.getPath() + "/" + sBindingPath,
+					sValue
+				);
+			}
+			this._calculateForm9BTotals();
+		},
+		_calculateForm9BTotals: function () {
+			const oViewModel = this.getModel("viewModel");
+			const aForm9B = oViewModel.getProperty("/catalog/Form9B") || [];
+			const aFields = ["Accural_Basis", "Discharge_Liabilty", "Idc", "Admitted_Cost"];
+			aFields.forEach(function (sField) {
+				const oSectionTotals = {};
+				aForm9B.forEach(function (oSection) {
+					const aChildren = oSection.Form9bheaditem || [];
+					let fSubtotal = 0;
+					aChildren.forEach(function (oChild) {
+						if (oChild.IsSubTotal === "X" || oChild.IsTotal === "X") {
+							return;
+						}
+						const fValue = parseFloat(oChild[sField]);
+						if (!isNaN(fValue)) {
+							fSubtotal += fValue;
+						}
+						if (sField === "Accural_Basis" || sField === "Discharge_Liabilty") {
+							const fAccural = parseFloat(oChild.Accural_Basis) || 0;
+							const fDischarge = parseFloat(oChild.Discharge_Liabilty) || 0;
+							oChild.Cash_Basis = (fAccural - fDischarge).toFixed(2);
+						}
+					});
+					oSectionTotals[oSection.Sno] = fSubtotal;
+					const oSubtotal = aChildren.find(function (oChild) {
+						return oChild.IsSubTotal === "X";
+					});
+					if (oSubtotal) {
+						oSubtotal[sField] = fSubtotal.toFixed(2);
+						if (sField === "Accural_Basis" || sField === "Discharge_Liabilty") {
+							const fAccural = parseFloat(oSubtotal.Accural_Basis) || 0;
+							const fDischarge = parseFloat(oSubtotal.Discharge_Liabilty) || 0;
+							oSubtotal.Cash_Basis = (fAccural - fDischarge).toFixed(2);
+						}
+					}
+				});
+				const oTotalSection = aForm9B.find(function (oSection) {
+					return oSection.IsTotal === "X";
+				});
+				if (oTotalSection) {
+					(oTotalSection.Form9bheaditem || []).forEach(function (oTotalRow) {
+						let fTotal = 0;
+						if (oTotalRow.SubSno === "0001") {
+							fTotal = Object.values(oSectionTotals).reduce(function (sum, value) {
+								return sum + value;
+							}, 0);
+						} else if (oTotalRow.SubSno === "0002") {
+							fTotal = (oSectionTotals["0001"] || 0) + (oSectionTotals["0002"] || 0);
+						} else if (oTotalRow.SubSno === "0003") {
+							fTotal = oSectionTotals["0003"] || 0;
+						}
+						oTotalRow[sField] = fTotal.toFixed(2);
+					});
+					(oTotalSection.Form9bheaditem || []).forEach(function (oTotalRow) {
+						const fAccural = parseFloat(oTotalRow.Accural_Basis) || 0;
+						const fDischarge = parseFloat(oTotalRow.Discharge_Liabilty) || 0;
+						oTotalRow.Cash_Basis = (fAccural - fDischarge).toFixed(2);
+					});
+				}
+			});
+			oViewModel.setProperty("/catalog/Form9B", aForm9B);
+		},
+		onFileChange: function (oEvent) {
+			var sID = oEvent.getParameter("id");
+			this.sFileUploaderID = sID;
+			var oFile = oEvent.getParameter("files") && oEvent.getParameter("files")[0];
+			this.checkMalwareValidationUploadExcel(oFile);
+		},
+
+		checkMalwareValidationUploadExcel: function (oFileObject) {
+			var oResourceBundle = this.getResourceBundle();
+			if (oFileObject) {
+				var reader = new FileReader();
+				reader.onload = function (event) {
+					BusyIndicator.show(0);
+					var aArrayBuffer = event.currentTarget.result;
+					var sBinaryString = this.convertArratBufferToBinary(aArrayBuffer);
+					var sUrl = this.getBaseURL() + "/malware_api/scan";
+					this.aArrayBuffer = aArrayBuffer;
+					BusyIndicator.show(0);
+					jQuery.ajax({
+						url: sUrl,
+						type: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						data: sBinaryString,
+						success: function (oResp) {
+							if (oResp.malwareDetected) {
+								this.byId(this.sFileUploaderID).clear();
+								BusyIndicator.hide();
+								messenger.error(oResourceBundle.getText("malwareFileDetectedErrorMsg"));
+							} else {
+								BusyIndicator.hide();
+								this.extractExcelData(this.aArrayBuffer);
+							}
+						}.bind(this),
+						error: function (error) {
+							BusyIndicator.hide();
+							this.byId(this.sFileUploaderID).clear();
+							messenger.error(oResourceBundle.getText("malwareScanFailedErrorMsg"));
+						}.bind(this)
+					});
+				}.bind(this);
+				reader.readAsArrayBuffer(oFileObject);
+			}
+		},
+
+		getBaseURL: function () {
+			var appId = this.getOwnerComponent().getManifestEntry("/sap.app/id"),
+				appPath = appId.replaceAll(".", "/"),
+				appModulePath = jQuery.sap.getModulePath(appPath);
+			return appModulePath;
+		},
+
+		convertArratBufferToBinary: function (aArrayBufferObject) {
+			var binary = '';
+			const bytes = new Uint8Array(aArrayBufferObject);
+			const len = bytes.byteLength;
+			for (let i = 0; i < len; i++) {
+				binary += String.fromCharCode(bytes[i]);
+			}
+			return binary;
+		},
+
+		extractExcelData: function (oData) {
+			BusyIndicator.show(0);
+			var workbook = XLSX.read(oData, {
+				type: "binary",
+			});
+			workbook.SheetNames.forEach(
+				function (sheetName) {
+					if (sheetName !== "Provisional") {
+						return;
+					}
+					var aExcelData = XLSX.utils.sheet_to_row_object_array(
+						workbook.Sheets[sheetName]
+					);
+					BusyIndicator.hide();
+					this.processUploadedData(aExcelData);
+				}.bind(this)
+			);
+		},
+		processUploadedData: function (aExcelData) {
+			var oViewModel = this.getModel("viewModel");
+			var aForm9B = oViewModel.getProperty("/catalog/Form9B") || [];
+			let oResourceBundle = this.getResourceBundle();
+			if (!aExcelData || !aExcelData.length) {
+				messenger.error(oResourceBundle.getText("uploadExcelEmptyError"));
+				return;
+			}
+			if (!aForm9B.length) {
+				messenger.error(oResourceBundle.getText("form9BBackendError"));
+				return;
+			}
+			var aSelectedRows = aExcelData.filter(function (oExcelRow) {
+				var sSection = String(oExcelRow["Section"] || "").trim();
+				return sSection !== "";
+			});
+			var aMandatoryFields = [
+				"Section",
+				"Head of Work",
+				"Head of Account",
+				"Accural Basis",
+				"Regulation",
+				"Justification"
+			];
+			var aErrors = [];
+			for (var i = 0; i < aSelectedRows.length; i++) {
+				var oExcelRow = aSelectedRows[i];
+				for (var j = 0; j < aMandatoryFields.length; j++) {
+					var sField = aMandatoryFields[j];
+					var sValue = String(
+						oExcelRow[sField] || ""
+					).trim();
+					if (!sValue) {
+						aErrors.push(
+							"Row " + (i + 2) +
+							": " + sField + " is mandatory."
+						);
+					}
+				}
+			}
+			if (aErrors.length) {
+				messenger.error(aErrors.join("\n"));
+				return;
+			}
+			var mExcelData = {};
+			aExcelData.forEach(function (oExcelRow) {
+				var sSection = String(oExcelRow["Section"] || "").trim();
+				if (!sSection) {
+					return;
+				}
+				mExcelData[sSection] = mExcelData[sSection] || [];
+				mExcelData[sSection].push(oExcelRow);
+			});
+			aForm9B.forEach(function (oParent) {
+				var sParentSno = String(oParent.Sno || "").trim();
+				var aExcelRows = mExcelData[sParentSno];
+				if (!aExcelRows) {
+					return;
+				}
+				var aExistingChildren = oParent.Form9bheaditem || [];
+				var aSubTotalRows = aExistingChildren.filter(function (oChild) {
+					return oChild.IsSubTotal === "X";
+				});
+				var aNewChildren = aExcelRows.map(function (oExcelRow, index) {
+					return {
+						SubSno: String(oExcelRow["Section"] || "").trim(),
+						Equipment: oExcelRow["Head of Work"] || "",
+						Head_Account: oExcelRow["Head of Account"] || "",
+						Accural_Basis: oExcelRow["Accural Basis"] || "",
+						Regulation: oExcelRow["Regulation"] || "",
+						Justification: oExcelRow["Justification"] || "",
+						Discharge_Liabilty: "0.00",
+						IsSubTotal: ""
+					};
+				});
+				oParent.Form9bheaditem = aNewChildren.concat(aSubTotalRows);
+			});
+			oViewModel.setProperty("/catalog/Form9B", aForm9B);
+			this._calculateForm9BTotals();
+			messenger.success(oResourceBundle.getText("uploadSuccess9B"));
+		}
 	});
 });

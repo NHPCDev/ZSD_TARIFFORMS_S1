@@ -359,6 +359,10 @@ sap.ui.define([
 			let sFiscalYear = this._FiscalYear;
 			let sTariffID = this._TariffID;
 			let oResourceBundle = this.getResourceBundle();
+			let isValid = this.validateItems();
+			if (!isValid) {
+				return;
+			}
 			let aPayload = this.getPayload("Submitted");
 			let sTitle = oResourceBundle.getText("CONFIRM_TITLE");
 			let sText = oResourceBundle.getText("CONFIRM_TEXT_FINAL_REQUEST_9A", sFiscalYear);
@@ -419,6 +423,203 @@ sap.ui.define([
 				Form_id: "9A",
 				Form9Ahead_9AItem: aParents
 			};
+		},
+		validateItems: function () {
+			const oViewModel = this.getModel("viewModel");
+			const aParents = oViewModel.getProperty("/catalog/Form9A") || [];
+			let oResourceBundle = this.getResourceBundle();
+			let bValid = true;
+			aParents.forEach(function (oParent) {
+				const aChildren = oParent.Form9Ahead_9AItem || [];
+				aChildren.forEach(function (oChild) {
+
+					// Don't validate subtotal rows
+					if (oChild.IsSubTotal === "X") {
+						return;
+					}
+
+					// Equipment
+					if (!this._validateField(
+						oChild,
+						"Equipment",
+						"_EquipmentState",
+						"_EquipmentStateText",
+						oResourceBundle.getText("headOfWorkMandatory")
+					)) {
+						bValid = false;
+					}
+
+					// Head Account
+					if (!this._validateField(
+						oChild,
+						"Head_Account",
+						"_HeadAccountState",
+						"_HeadAccountStateText",
+						oResourceBundle.getText("headOfAccountMandatory")
+					)) {
+						bValid = false;
+					}
+
+					// Accrual Basis
+					if (!this._validateField(
+						oChild,
+						"Accural_Basis",
+						"_AccuralBasisState",
+						"_AccuralBasisStateText",
+						oResourceBundle.getText("accuralBasisMandatory")
+					)) {
+						bValid = false;
+					}
+
+					// Regulation
+					if (!this._validateField(
+						oChild,
+						"Regulation",
+						"_RegulationState",
+						"_RegulationStateText",
+						oResourceBundle.getText("regulationMandatory")
+					)) {
+						bValid = false;
+					}
+
+					// Justification
+					if (!this._validateField(
+						oChild,
+						"Justification",
+						"_JustificationState",
+						"_JustificationStateText",
+						oResourceBundle.getText("justificationMandatory")
+					)) {
+						bValid = false;
+					}
+				}, this);
+			}, this);
+			oViewModel.refresh(true);
+			if (!bValid) {
+				messenger.error(oResourceBundle.getText("pleaseFillAllMandatoryFields"));
+			}
+			return bValid;
+		},
+		_validateField: function (
+			oItem,
+			sProperty,
+			sStateProperty,
+			sStateTextProperty,
+			sErrorText
+		) {
+			const sValue = oItem[sProperty];
+			if (
+				sValue === null ||
+				sValue === undefined ||
+				String(sValue).trim() === ""
+			) {
+				oItem[sStateProperty] = "Error";
+				oItem[sStateTextProperty] = sErrorText;
+				return false;
+			}
+			oItem[sStateProperty] = "None";
+			oItem[sStateTextProperty] = "";
+			return true;
+		},
+		onDecimalNumberChange: function (oEvent) {
+			var oControl = oEvent.getSource();
+			var sValue = oEvent.getParameter("value") || "";
+			oControl.setValueState("None");
+			oControl.setValueStateText("");
+			sValue = sValue.replace(/[^0-9.]/g, "");
+			if (sValue.startsWith(".")) {
+				sValue = "";
+			}
+			var iDotIndex = sValue.indexOf(".");
+			if (iDotIndex !== -1) {
+				var sIntegerPart = sValue.substring(0, iDotIndex);
+				var sDecimalPart = sValue.substring(iDotIndex + 1);
+				sDecimalPart = sDecimalPart.replace(/\./g, "");
+				sDecimalPart = sDecimalPart.substring(0, 2);
+				sValue = sIntegerPart + "." + sDecimalPart;
+			}
+			if (sValue.includes(".")) {
+				var aParts = sValue.split(".");
+				aParts[0] = aParts[0].replace(/^0+(?=\d)/, "");
+				sValue = aParts[0] + "." + aParts[1];
+			} else {
+				sValue = sValue.replace(/^0+(?=\d)/, "");
+			}
+			oControl.setValue(sValue);
+			var sBindingPath = oControl.getBindingPath("value");
+			if (!sBindingPath) {
+				return;
+			}
+			var oContext = oControl.getBindingContext("viewModel");
+			if (oContext) {
+				oContext.getModel().setProperty(
+					oContext.getPath() + "/" + sBindingPath,
+					sValue
+				);
+			}
+			this._calculateForm9ATotals();
+		},
+		_calculateForm9ATotals: function () {
+			const oViewModel = this.getModel("viewModel");
+			const aForm9A = oViewModel.getProperty("/catalog/Form9A") || [];
+			const aFields = ["Accural_Basis", "Discharge_Liabilty", "Idc", "Admitted_Cost"];
+			aFields.forEach(function (sField) {
+				const oSectionTotals = {};
+				aForm9A.forEach(function (oSection) {
+					const aChildren = oSection.Form9Ahead_9AItem || [];
+					let fSubtotal = 0;
+					aChildren.forEach(function (oChild) {
+						if (oChild.IsSubTotal === "X" || oChild.IsTotal === "X") {
+							return;
+						}
+						const fValue = parseFloat(oChild[sField]);
+						if (!isNaN(fValue)) {
+							fSubtotal += fValue;
+						}
+						if (sField === "Accural_Basis" || sField === "Discharge_Liabilty") {
+							const fAccural = parseFloat(oChild.Accural_Basis) || 0;
+							const fDischarge = parseFloat(oChild.Discharge_Liabilty) || 0;
+							oChild.Cash_Basis = (fAccural - fDischarge).toFixed(2);
+						}
+					});
+					oSectionTotals[oSection.Sno] = fSubtotal;
+					const oSubtotal = aChildren.find(function (oChild) {
+						return oChild.IsSubTotal === "X";
+					});
+					if (oSubtotal) {
+						oSubtotal[sField] = fSubtotal.toFixed(2);
+						if (sField === "Accural_Basis" || sField === "Discharge_Liabilty") {
+							const fAccural = parseFloat(oSubtotal.Accural_Basis) || 0;
+							const fDischarge = parseFloat(oSubtotal.Discharge_Liabilty) || 0;
+							oSubtotal.Cash_Basis = (fAccural - fDischarge).toFixed(2);
+						}
+					}
+				});
+				const oTotalSection = aForm9A.find(function (oSection) {
+					return oSection.IsTotal === "X";
+				});
+				if (oTotalSection) {
+					(oTotalSection.Form9Ahead_9AItem || []).forEach(function (oTotalRow) {
+						let fTotal = 0;
+						if (oTotalRow.SubSno === "0001") {
+							fTotal = Object.values(oSectionTotals).reduce(function (sum, value) {
+								return sum + value;
+							}, 0);
+						} else if (oTotalRow.SubSno === "0002") {
+							fTotal = (oSectionTotals["0001"] || 0) + (oSectionTotals["0002"] || 0);
+						} else if (oTotalRow.SubSno === "0003") {
+							fTotal = oSectionTotals["0003"] || 0;
+						}
+						oTotalRow[sField] = fTotal.toFixed(2);
+					});
+					(oTotalSection.Form9Ahead_9AItem || []).forEach(function (oTotalRow) {
+						const fAccural = parseFloat(oTotalRow.Accural_Basis) || 0;
+						const fDischarge = parseFloat(oTotalRow.Discharge_Liabilty) || 0;
+						oTotalRow.Cash_Basis = (fAccural - fDischarge).toFixed(2);
+					});
+				}
+			});
+			oViewModel.setProperty("/catalog/Form9A", aForm9A);
 		}
 	});
 });
