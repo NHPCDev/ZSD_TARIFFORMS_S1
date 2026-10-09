@@ -5,12 +5,16 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/ui/core/BusyIndicator",
-], (BaseController, messenger, formatter, Filter, FilterOperator, BusyIndicator) => {
+	"sap/ui/core/Item",
+], (BaseController, messenger, formatter, Filter, FilterOperator, BusyIndicator, Item) => {
 	"use strict";
 
 	return BaseController.extend("com.nhpc.zsdtarifformss1.controller.Form9A", {
 		formatter: formatter,
 		onInit: function () {
+			this.oItemsProcessor = [];
+			// this.oUploadPluginInstance = null;
+
 			this.getRouter().getRoute("RouteForm9A").attachPatternMatched(this._onRoutePatternMatched, this);
 		},
 
@@ -21,12 +25,19 @@ sap.ui.define([
 		_onRoutePatternMatched: function (oEvent) {
 			const oViewModel = this.getModel("viewModel");
 			const oArgs = oEvent.getParameter("arguments");
+			oViewModel.setProperty("/attachmentList", []);
 			const sStatus = oArgs.Status;
 			oViewModel.setProperty("/Status", sStatus);
 			let sSelectedYear = oArgs.Fisical_Year;
 			let sTariffID = oArgs.tariffId;
+			let sFormID = oArgs.formId;
+
 			this._FiscalYear = sSelectedYear;
 			this._TariffID = sTariffID;
+			this._FormID = sFormID;
+
+			this.getAttachments();
+
 			let sTariffPeriod = oViewModel.getProperty("/Header/Tariff_Period");
 			sTariffPeriod = sTariffPeriod.replace("CERC_", "");
 			let sTariffStage = oViewModel.getProperty("/Header/Tariff_Stage");
@@ -341,6 +352,8 @@ sap.ui.define([
 				BusyIndicator.show(0);
 				oModel.create("/Form9AheadSet", aPayload, {
 					success: function (oData) {
+						this.fileUploadwithTable();
+
 						messenger.success(oResourceBundle.getText("form9ADraftSuccess", sFiscalYear), () => {
 							this.getRouter().navTo("RouteDetail", {
 								tariffId: sTariffID
@@ -419,6 +432,401 @@ sap.ui.define([
 				Form_id: "9A",
 				Form9Ahead_9AItem: aParents
 			};
-		}
+		},
+
+		// added for attachment handling
+		fileUploadwithTable: function () {
+
+			var oModel = this.getModel(),
+				aAttachments = this.oItemsProcessor,
+				sUrl = oModel.sServiceUrl;
+
+			console.log("Attachments URL", sUrl);
+
+			if (aAttachments && aAttachments.length > 0) {
+				this.iNoOfAttachments = aAttachments.length;
+				this.iUploadCount = 0;
+				this.isAttachmentFail = false;
+				this.sUploadMessage = "";
+
+				for (var i = 0; i < aAttachments.length; i++) {
+
+					var oAttachment = aAttachments[i].item;
+
+					oAttachment.addHeaderField(
+						new Item({
+							key: "slug",
+							text: this._TariffID + "/" +
+								this._FormID + "/" +
+								this._FiscalYear + "/" +
+								oAttachment.getFileName()
+						})
+					);
+
+					oAttachment.addHeaderField(
+						new Item({
+							key: "X-CSRF-Token",
+							text: oModel.getSecurityToken()
+						})
+					);
+
+					this.oUploadPluginInstance.setUploadUrl(
+						sUrl + "/AttachmentSet"
+					);
+
+					aAttachments[i].resolve(oAttachment);
+				}
+			}
+		},
+
+		onPluginActivated: function (oEvent) {
+			console.log("FORM 9A onPluginActivated CALLED");
+
+			this.oItemsProcessor = [];
+			this.iNoOfAttachments = 0;
+			this.iUploadCount = 0;
+			this.sUploadMessage = "";
+
+			this.oUploadPluginInstance = oEvent.getParameter("oPlugin");
+
+			var oUploadActionBtn = this.byId("uploadButton"),
+				oUploadBtn = oUploadActionBtn.getAggregation("_actionButton");
+
+			oUploadBtn.setIcon("sap-icon://upload");
+			oUploadBtn.setStyle("Emphasized");
+			oUploadBtn.setIconFirst(true);
+		},
+
+		itemValidationCallback: function (oItemInfo) {
+
+			var oItemDetails = oItemInfo.oItem,
+				oViewModel = this.getModel("viewModel"),
+				aAttachmentList = oViewModel.getProperty("/attachmentList") || [];
+
+			if (
+				oItemDetails.getFileName() !== null &&
+				oItemDetails.getFileName() !== undefined &&
+				oItemDetails.getFileName().endsWith(".msg")
+			) {
+				let fileType = "application/vnd.ms-outlook";
+				oItemDetails.setMediaType(fileType);
+			}
+
+			aAttachmentList.push({
+				"Filename": oItemDetails.getFileName(),
+				"Mimetype": oItemDetails.getMediaType(),
+				"updatedby": sap.ushell.Container.getUser().getFullName(),
+				"updatedon": this.formatDate(new Date())
+			});
+
+			oViewModel.setProperty("/attachmentList", aAttachmentList);
+
+			const { oItem } = oItemInfo;
+
+			var oItemPromise = new Promise((resolve, reject) => {
+
+				this.oItemsProcessor.push({
+					item: oItem,
+					resolve: resolve,
+					reject: reject
+				});
+
+			});
+
+
+			this.checkMalwareValidation(oItemInfo);
+
+			return oItemPromise;
+		},
+		checkMalwareValidation: function (oItemInfo) {
+
+			var oResourceBundle = this.getResourceBundle(),
+				oFileObject = oItemInfo.oItem.getFileObject();
+
+			if (oFileObject) {
+
+				var reader = new FileReader();
+
+				reader.onload = function (event) {
+
+					var aArrayBuffer = event.currentTarget.result;
+					var sBinaryString = this.convertArratBufferToBinary(aArrayBuffer);
+
+					var sUrl = this.getBaseURL() + "/malware_api/scan";
+
+					BusyIndicator.show();
+
+					jQuery.ajax({
+						url: sUrl,
+						type: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						data: sBinaryString,
+
+						success: function (oResp) {
+
+							if (oResp.malwareDetected) {
+
+								this.removeMalwareFile();
+
+								messenger.error(
+									oResourceBundle.getText("malwareFileDetectedErrorMsg")
+								);
+
+							} else {
+								BusyIndicator.hide();
+							}
+
+						}.bind(this),
+
+						error: function () {
+
+							BusyIndicator.hide();
+
+							this.removeMalwareFile();
+
+							messenger.error(
+								oResourceBundle.getText("malwareScanFailedErrorMsg")
+							);
+
+						}.bind(this)
+					});
+
+				}.bind(this);
+
+				reader.readAsArrayBuffer(oFileObject);
+			}
+		},
+		convertArratBufferToBinary: function (aArrayBufferObject) {
+
+			var binary = "";
+
+			const bytes = new Uint8Array(aArrayBufferObject);
+			const len = bytes.byteLength;
+
+			for (let i = 0; i < len; i++) {
+				binary += String.fromCharCode(bytes[i]);
+			}
+
+			return binary;
+		},
+		removeMalwareFile: function () {
+
+			var oViewModel = this.getModel("viewModel"),
+				aAttachmentList = oViewModel.getProperty("/attachmentList");
+
+			aAttachmentList.pop();
+			this.oItemsProcessor.pop();
+
+			oViewModel.setProperty("/attachmentList", aAttachmentList);
+			oViewModel.refresh();
+
+			BusyIndicator.hide();
+		},
+		onUploadComplete: function (oEvent) {
+			var oResourceBundle = this.getResourceBundle(),
+				sStatus = oEvent.getParameter("status");
+
+			this.iUploadCount = this.iUploadCount + 1;
+
+			if (sStatus === 500 || sStatus === 400 || sStatus === 415) {
+				this.isAttachmentFail = true;
+
+				var oParser = new DOMParser();
+				var oResponse = oParser.parseFromString(
+					oEvent.getParameter("response"),
+					"text/xml"
+				);
+
+				var aMessages = oResponse.getElementsByTagName("message");
+
+				if (aMessages && aMessages.length > 0) {
+					var sMessage = aMessages[0].innerHTML;
+					this.sUploadMessage = sMessage + "\n";
+				}
+			}
+
+			if (this.iNoOfAttachments === this.iUploadCount) {
+				BusyIndicator.hide();
+
+				if (this.isAttachmentFail) {
+					messenger.error(this.sUploadMessage);
+				}
+			}
+		},
+
+		getAttachments: function () {
+			var oViewModel = this.getModel("viewModel"),
+				oModel = this.getModel();
+
+			var aFilters = [
+				new Filter("reqno", FilterOperator.EQ, this._TariffID),
+				new Filter("dateh", FilterOperator.EQ, this._FiscalYear),
+				new Filter("Formid", FilterOperator.EQ, this._FormID)
+			];
+
+			oModel.read("/AttachmentSet", {
+				filters: aFilters,
+
+				success: function (oResp) {
+
+					console.log("Form 9A Attachments:", oResp.results);
+
+					var aAttachments = oResp.results || [];
+
+					aAttachments.forEach(function (oAttachment) {
+
+						oAttachment.previewable = true;
+						oAttachment.trustedSource = true;
+
+						oAttachment.Url = this.getDownloadUrl(
+							oAttachment.reqno,
+							"",
+							this._FormID,
+							oAttachment.srno ? oAttachment.srno.trim() : "",
+							oAttachment.Filename
+						);
+
+					}.bind(this));
+
+					oViewModel.setProperty("/attachmentList", aAttachments);
+
+				}.bind(this),
+
+				error: function (oError) {
+
+					oViewModel.setProperty("/attachmentList", []);
+
+					messenger.error(
+						JSON.parse(oError.responseText).error.message.value
+					);
+
+				}.bind(this)
+			});
+		},
+		getDownloadUrl: function (sTariffID, sFiscalYear, sFormID, sSrno, sFileName) {
+
+			var oModel = this.getModel();
+
+			var sUrl =
+				oModel.sServiceUrl +
+				"/AttachmentSet(" +
+				"Formid='" + encodeURIComponent(sFormID) + "'," +
+				"dateh=''," +
+				"location=''," +
+				"flagyn=''," +
+				"date=''," +
+				"srno='" + encodeURIComponent(sSrno) + "'," +
+				"reqno='" + encodeURIComponent(sTariffID) + "'," +
+				"Filename='" + encodeURIComponent(sFileName) + "'" +
+				")/$value";
+
+			return sUrl;
+		},
+		openPreview: function (oEvent) {
+
+			const oSource = oEvent.getSource();
+			const oBindingContext = oSource.getBindingContext("viewModel");
+
+			if (oBindingContext && this.oUploadPluginInstance) {
+				this.oUploadPluginInstance.openFilePreview(oBindingContext);
+			}
+		},
+		onDeleteAttachment: function (oEvent) {
+
+			var oSource = oEvent.getSource();
+			const oContext = oSource.getBindingContext("viewModel");
+
+			var oResourceBundle = this.getResourceBundle(),
+				oViewModel = this.getModel("viewModel"),
+				sPath = oContext.getPath(),
+				objectAtt = oViewModel.getProperty(sPath),
+				sFileName = oViewModel.getProperty(sPath + "/Filename"),
+				sTitle = oResourceBundle.getText("CONFIRM_TITLE");
+
+			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg", sFileName);
+
+			messenger.confirm(sTitle, sMessage, "Confirm", null, function () {
+				this.deleteAttachment(objectAtt);
+			}.bind(this));
+		},
+		deleteAttachment: function (objectAtt) {
+
+			var oResourceBundle = this.getResourceBundle(),
+				oModel = this.getModel();
+
+			var sUrl = oModel.createKey("/AttachmentSet", {
+				Formid: objectAtt.Formid,
+				dateh: objectAtt.dateh,
+				location: objectAtt.location,
+				flagyn: objectAtt.flagyn,
+				date: objectAtt.date,
+				srno: objectAtt.srno,
+				reqno: objectAtt.reqno,
+				Filename: objectAtt.Filename
+			});
+
+			BusyIndicator.show();
+
+			oModel.remove(sUrl, {
+
+				success: function () {
+
+					BusyIndicator.hide();
+
+					this.getAttachments();
+
+					messenger.success(
+						oResourceBundle.getText("postAttDelSuccMessage")
+					);
+
+				}.bind(this),
+
+				error: function (oError) {
+
+					BusyIndicator.hide();
+
+					messenger.error(
+						JSON.parse(oError.responseText).error.message.value
+					);
+
+				}.bind(this)
+			});
+		},
+
+		onRemoveAttachment: function (oEvent) {
+
+			var oSource = oEvent.getSource();
+			const oContext = oSource.getBindingContext("viewModel");
+
+			this.removeItem(oContext);
+		},
+		removeItem: function (oContext) {
+
+			var oResourceBundle = this.getResourceBundle(),
+				oViewModel = this.getModel("viewModel"),
+				sPath = oContext.getPath(),
+				sFileName = oViewModel.getProperty(sPath + "/Filename"),
+				sTitle = oResourceBundle.getText("CONFIRM_TITLE");
+
+			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg", sFileName);
+
+			messenger.confirm(sTitle, sMessage, "Confirm", null, function () {
+
+				if (sPath.split("/")[2]) {
+
+					var index = sPath.split("/")[2];
+					var data = oViewModel.getProperty("/attachmentList");
+
+					this.oItemsProcessor.splice(index, 1);
+					data.splice(index, 1);
+
+					oViewModel.setProperty("/attachmentList", data);
+					oViewModel.refresh(true);
+				}
+
+			}.bind(this));
+		},
 	});
 });

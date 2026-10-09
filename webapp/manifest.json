@@ -147,6 +147,13 @@
           "target": [
             "TargetForm9D"
           ]
+        },
+        {
+          "name": "RouteForm15B",
+          "pattern": "Form15B/{tariffId}/{formId}/{Fisical_Year}/{Status}",
+          "target": [
+            "TargetForm15B"
+          ]
         }
       ],
       "targets": {
@@ -188,6 +195,10 @@
           "clearControlAggregation": false,
           "id": "Form9D",
           "name": "Form9D"
+        },
+        "TargetForm15B": {
+          "id": "Form15B",
+          "name": "Form15B"
         }
       }
     },

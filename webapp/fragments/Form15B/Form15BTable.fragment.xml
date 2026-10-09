@@ -1,0 +1,53 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Table
+        id="idForm15BTable"
+        width="100%"
+        fixedLayout="true"
+        visible="true"
+        growing="true"
+        growingThreshold="20"
+        sticky="ColumnHeaders,HeaderToolbar"
+        items="{viewModel>/Form15B/Items}"
+        updateFinished="onManageTaskTableUpdateFinish"
+        alternateRowColors="true"
+    >
+        <columns>
+            <Column id="idForm15BTableColumnMonth">
+                    <Label id="idForm15BTableLabelMonth" text="{i18n>month}" />
+            </Column>
+
+            <Column id="idForm15BTableColumnSequence">
+                <Label id="idForm15BTableLabelSequence" text="{i18n>sequence}" />
+            </Column>
+
+            <Column id="idForm15BTableColumndesignEnergy">
+                <Label id="idForm15BTableLabelDesignEnergy" text="{i18n>designEnergy}" />
+            </Column>
+
+            <Column id="idForm15BTableColumnMwContinous">
+                <Label id="idForm15BTableLabelMwContinous" text="{i18n>mwContinous}" />
+            </Column>
+        </columns>
+
+        <items>
+            <ColumnListItem id="idForm15BTableColumnListItem">
+                <cells>
+                    <Text id="idForm15BTableTextMonth" text="{viewModel>Month}" />
+
+                    <Text id="idForm15BTableTextSequence"    text="{viewModel>Sequence}" />
+                    <Text id="idForm15BTableTextDesignEnergy"    text="{viewModel>Design_Energy}" />
+
+                    <Input id="idForm15BTableInputMwContinous"
+                        value="{viewModel>Mw_Continuos}"
+                        type="Number"
+                        editable="{viewModel>/canEdit}"
+                        width="100%"
+                    />
+                </cells>
+            </ColumnListItem>
+        </items>
+    </Table>
+</core:FragmentDefinition>

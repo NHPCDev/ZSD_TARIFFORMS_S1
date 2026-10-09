@@ -125,8 +125,8 @@
                             </VBox>
                         </HBox>
                         <Text text="{viewModel>Mimetype}" />
-                        <Text text="{viewModel>CreatedBy}" />
-                        <Text text="{viewModel>CreatedOn}" />
+                        <Text text="{viewModel>updatedby}" />
+                        <Text text="{viewModel>updatedon}" />
                         <HBox>
                             <Button
                                 icon="sap-icon://delete"
