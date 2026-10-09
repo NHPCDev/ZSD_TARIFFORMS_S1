@@ -78,6 +78,8 @@
                         width="100%"
                         editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
+                        valueState="{viewModel>_EquipmentState}"
+                        valueStateText="{viewModel>_EquipmentStateText}"
                     />
                 </template>
             </Column>
@@ -95,6 +97,8 @@
                         liveChange="onNumberInputChange"
                         editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
+                        valueState="{viewModel>_HeadAccountState}"
+                        valueStateText="{viewModel>_HeadAccountStateText}"
                     />
                 </template>
             </Column>
@@ -112,6 +116,8 @@
                         change="onDecimalNumberChange"
                         editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
+                        valueState="{viewModel>_AccuralBasisState}"
+                        valueStateText="{viewModel>_AccuralBasisStateText}"
                     />
                 </template>
             </Column>
@@ -179,6 +185,8 @@
                         value="{viewModel>Regulation}"
                         editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
+                        valueState="{viewModel>_RegulationState}"
+                        valueStateText="{viewModel>_RegulationStateText}"
                     />
                 </template>
             </Column>
@@ -198,6 +206,8 @@
                         width="100%"
                         editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
+                        valueState="{viewModel>_JustificationState}"
+                        valueStateText="{viewModel>_JustificationStateText}"
                     />
                 </template>
             </Column>

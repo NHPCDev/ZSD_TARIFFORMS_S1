@@ -3,6 +3,7 @@
     xmlns:core="sap.ui.core"
     xmlns:m="sap.m"
     xmlns:rowmodes="sap.ui.table.rowmodes"
+    xmlns:u = "sap.ui.unified"
     class="sapUiSizeCompact"
 >
     <TreeTable
@@ -10,7 +11,7 @@
         rows="{
             path: 'viewModel>/catalog/Form9B',
             parameters: {
-                arrayNames: ['Form9Bhead_9BItem']
+                arrayNames: ['Form9bheaditem']
             }
         }"
         selectionMode="Single"
@@ -23,17 +24,32 @@
         <extension>
             <m:OverflowToolbar>
                 <m:ToolbarSpacer />
+                <u:FileUploader
+                    id="fileUploader9B"
+                    sameFilenameAllowed="true"
+                    iconOnly="false"
+                    buttonOnly="true"
+                    fileType="XLSX"
+                    icon="sap-icon://upload"
+                    iconFirst="true"
+                    change="onFileChange"
+                    visible="{= ${viewModel>/Status} !== 'Submitted' }"
+                    style="Accept"
+                    buttonText="{i18n>uploadBtnText}"
+                ></u:FileUploader>
                 <m:Button
                     text="{i18n>addChild}"
                     icon="sap-icon://add"
-                    type="Emphasized"
+                    type="Accept"
                     press=".onForm9BAdd"
+                    visible="{= ${viewModel>/Status} !== 'Submitted' }"
                 />
                 <m:Button
                     text="{i18n>deleteChild}"
                     icon="sap-icon://delete"
                     type="Reject"
                     press=".onForm9BDelete"
+                    visible="{= ${viewModel>/Status} !== 'Submitted' }"
                 />
             </m:OverflowToolbar>
         </extension>
@@ -74,8 +90,10 @@
                         rows="3"
                         growing="false"
                         width="100%"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
+                        valueState="{viewModel>_EquipmentState}"
+                        valueStateText="{viewModel>_EquipmentStateText}"
                     />
                 </template>
             </Column>
@@ -91,8 +109,10 @@
                     <m:Input
                         value="{viewModel>Head_Account}"
                         liveChange="onNumberInputChange"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
+                        valueState="{viewModel>_HeadAccountState}"
+                        valueStateText="{viewModel>_HeadAccountStateText}"
                     />
                 </template>
             </Column>
@@ -107,9 +127,11 @@
                 <template>
                     <m:Input
                         value="{viewModel>Accural_Basis}"
-                        liveChange="onDecimalNumberChange"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        change="onDecimalNumberChange"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
+                        valueState="{viewModel>_AccuralBasisState}"
+                        valueStateText="{viewModel>_AccuralBasisStateText}"
                     />
                 </template>
             </Column>
@@ -124,8 +146,8 @@
                 <template>
                     <m:Input
                         value="{viewModel>Discharge_Liabilty}"
-                        liveChange="onDecimalNumberChange"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        change="onDecimalNumberChange"
+                        editable="false"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>
@@ -141,8 +163,8 @@
                 <template>
                     <m:Input
                         value="{viewModel>Cash_Basis}"
-                        liveChange="onDecimalNumberChange"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        change="onDecimalNumberChange"
+                        editable="false"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>
@@ -158,8 +180,8 @@
                 <template>
                     <m:Input
                         value="{viewModel>Idc}"
-                        liveChange="onDecimalNumberChange"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        change="onDecimalNumberChange"
+                        editable="false"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>
@@ -175,8 +197,10 @@
                 <template>
                     <m:Input
                         value="{viewModel>Regulation}"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
+                        valueState="{viewModel>_RegulationState}"
+                        valueStateText="{viewModel>_RegulationStateText}"
                     />
                 </template>
             </Column>
@@ -194,8 +218,10 @@
                         rows="3"
                         growing="false"
                         width="100%"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        editable="{= ${viewModel>/canEdit} &amp;&amp; ${viewModel>IsSubTotal}!== 'X' &amp;&amp; ${viewModel>IsTotal}!=='X'}"
                         visible="{= !${viewModel>Text} }"
+                        valueState="{viewModel>_JustificationState}"
+                        valueStateText="{viewModel>_JustificationStateText}"
                     />
                 </template>
             </Column>
@@ -210,8 +236,8 @@
                 <template>
                     <m:Input
                         value="{viewModel>Admitted_Cost}"
-                        liveChange="onDecimalNumberChange"
-                        editable="{= ${viewModel>/canEdit} &amp;&amp; !${viewModel>isSubtotal} &amp;&amp; !${viewModel>isTotal}}"
+                        change="onDecimalNumberChange"
+                        editable="false"
                         visible="{= !${viewModel>Text} }"
                     />
                 </template>

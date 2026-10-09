@@ -122,16 +122,16 @@
                         <Button
                             text="{i18n>saveBtnText}"
                             type="Critical"
-                            press="handleInterimSubmitBtnPress"
+                            press="handleSaveBtnPress"
                             icon="sap-icon://save"
-                            visible="{= ${viewModel>/requestDetails/Status} !== '02' }"
+                            visible="{= ${viewModel>/Status} !== 'Submitted' }"
                         />
                         <Button
                             text="{i18n>submitBtnText}"
                             type="Success"
                             press="handleSubmitBtnPress"
                             icon="sap-icon://create"
-                            visible="{= ${viewModel>/requestDetails/Status} !== '02' }"
+                            visible="{= ${viewModel>/Status} !== 'Submitted' }"
                         />
                     </OverflowToolbar>
                 </footer>
