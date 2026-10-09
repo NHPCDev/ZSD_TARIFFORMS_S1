@@ -3,6 +3,7 @@
     xmlns:core="sap.ui.core"
     xmlns:m="sap.m"
     xmlns:rowmodes="sap.ui.table.rowmodes"
+    xmlns:u = "sap.ui.unified"
     class="sapUiSizeCompact"
 >
     <TreeTable
@@ -23,6 +24,26 @@
         <extension>
             <m:OverflowToolbar>
                 <m:ToolbarSpacer />
+                <m:Button
+                    text="{i18n>DownloadBtnText}"
+                    icon="sap-icon://download"
+                    type="Reject"
+                    press="onDownloadTemplate"
+                    visible="{= ${viewModel>/Status} !== 'Submitted' }"
+                />
+                <u:FileUploader
+                    id="fileUploader9A"
+                    sameFilenameAllowed="true"
+                    iconOnly="false"
+                    buttonOnly="true"
+                    fileType="XLSX"
+                    icon="sap-icon://upload"
+                    iconFirst="true"
+                    change="onFileChange"
+                    visible="{= ${viewModel>/Status} !== 'Submitted' }"
+                    style="Accept"
+                    buttonText="{i18n>uploadBtnText}"
+                ></u:FileUploader>
                 <m:Button
                     text="{i18n>addChild}"
                     icon="sap-icon://add"

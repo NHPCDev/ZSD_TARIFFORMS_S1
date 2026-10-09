@@ -1029,5 +1029,268 @@ sap.ui.define([
 
 			}.bind(this));
 		},
+		onDownloadTemplate: function () {
+			var oViewModel = this.getModel("viewModel");
+			var aData = oViewModel.getProperty("/catalog/Form9A") || [];
+			var aExcelData = [];
+
+			var fnAddRows = function (aItems) {
+				aItems.forEach(function (oItem) {
+					if (oItem.IsTotal === "X") {
+						return;
+					}
+					aExcelData.push({
+						NodeType: "H",
+						Text: oItem.Text || "",
+						Equipment: oItem.Equipment || "",
+						Head_Account: oItem.Head_Account || "",
+						Accural_Basis: oItem.Accural_Basis || "",
+						Discharge_Liabilty: oItem.Discharge_Liabilty || "",
+						Cash_Basis: oItem.Cash_Basis || "",
+						Idc: oItem.Idc || "",
+						Regulation: oItem.Regulation || "",
+						Justification: oItem.Justification || "",
+						Admitted_Cost: oItem.Admitted_Cost || ""
+					});
+
+					if (oItem.Form9Ahead_9AItem && oItem.Form9Ahead_9AItem.length) {
+						// oItem.Form9Ahead_9AItem.forEach(function (oChild) {
+						// 	aExcelData.push({
+						// 		NodeType: "I",
+						// 		Text: oChild.Text || "",
+						// 		Equipment: oChild.Equipment || "",
+						// 		Head_Account: oChild.Head_Account || "",
+						// 		Accural_Basis: oChild.Accural_Basis || "",
+						// 		Discharge_Liabilty: oChild.Discharge_Liabilty || "",
+						// 		Cash_Basis: oChild.Cash_Basis || "",
+						// 		Idc: oChild.Idc || "",
+						// 		Regulation: oChild.Regulation || "",
+						// 		Justification: oChild.Justification || "",
+						// 		Admitted_Cost: oChild.Admitted_Cost || ""
+						// 	});
+						// });
+					}
+				});
+			};
+
+			fnAddRows(aData);
+
+			var aCols = [
+				{
+					label: "Node Type",
+					property: "NodeType",
+					type: "string"
+				},
+				{
+					label: this.getResourceBundle().getText("title1"),
+					property: "Text",
+					type: "string"
+				},
+				{
+					label: this.getResourceBundle().getText("headOfWork"),
+					property: "Equipment",
+					type: "string"
+				},
+				{
+					label: this.getResourceBundle().getText("headOfAccount"),
+					property: "Head_Account",
+					type: "string"
+				},
+				{
+					label: this.getResourceBundle().getText("accuralBasis"),
+					property: "Accural_Basis",
+					type: "string"
+				},
+				// {
+				// 	label: this.getResourceBundle().getText("unDischargedLiability"),
+				// 	property: "Discharge_Liabilty",
+				// 	type: "string"
+				// },
+				// {
+				// 	label: this.getResourceBundle().getText("cashBasis"),
+				// 	property: "Cash_Basis",
+				// 	type: "string"
+				// },
+				// {
+				// 	label: this.getResourceBundle().getText("IDCIncluded"),
+				// 	property: "Idc",
+				// 	type: "string"
+				// },
+				{
+					label: this.getResourceBundle().getText("regulationUnderWhichClaimed"),
+					property: "Regulation",
+					type: "string"
+				},
+				{
+					label: this.getResourceBundle().getText("justification"),
+					property: "Justification",
+					type: "string"
+				},
+				// {
+				// 	label: this.getResourceBundle().getText("admittedCostbyTheCommissionIfAny"),
+				// 	property: "Admitted_Cost",
+				// 	type: "string"
+				// }
+			];
+
+			var oSettings = {
+				workbook: {
+					columns: aCols
+				},
+				dataSource: aExcelData,
+				fileName: "Form9A.xlsx"
+			};
+
+			var oSpreadsheet = new sap.ui.export.Spreadsheet(oSettings);
+
+			oSpreadsheet.build().finally(function () {
+				oSpreadsheet.destroy();
+			});
+		},
+		onFileChange: function (oEvent) {
+			var oFile = oEvent.getParameter("files") && oEvent.getParameter("files")[0];
+			if (!oFile || !window.FileReader) {
+				return;
+			}
+			var that = this;
+			var oResourceBundle = this.getResourceBundle();
+			var oReader = new FileReader();
+			let oViewModel = this.getModel("viewModel");
+			let oData = oViewModel.getProperty("/catalog/Form9A");
+			let sTotalData = oData.find(i => i.IsTotal === "X");
+			let aExistingSections = oData.filter(function (i) {
+				return i.IsTotal !== "X";
+			});
+			var oHeaderMap = {
+				Text: oResourceBundle.getText("title1"),
+				Equipment: oResourceBundle.getText("headOfWork"),
+				Head_Account: oResourceBundle.getText("headOfAccount"),
+				Accural_Basis: oResourceBundle.getText("accuralBasis"),
+				Discharge_Liabilty: oResourceBundle.getText("unDischargedLiability"),
+				Cash_Basis: oResourceBundle.getText("cashBasis"),
+				Idc: oResourceBundle.getText("IDCIncluded"),
+				Regulation: oResourceBundle.getText("regulationUnderWhichClaimed"),
+				Justification: oResourceBundle.getText("justification"),
+				Admitted_Cost: oResourceBundle.getText("admittedCostbyTheCommissionIfAny")
+			};
+			var fnGetValue = function (oRow, sProperty) {
+				var sExcelHeader = oHeaderMap[sProperty];
+				var vValue;
+				if (Object.prototype.hasOwnProperty.call(oRow, sExcelHeader)) {
+					vValue = oRow[sExcelHeader];
+				} else {
+					vValue = oRow[sProperty];
+				}
+				return vValue === null || vValue === undefined ? "" : String(vValue);
+			};
+			var fnIsEmpty = function (vValue) {
+				return vValue === null || vValue === undefined || String(vValue).trim() === "";
+			};
+			var fnGetFieldLabel = function (sField) {
+				return oHeaderMap[sField] || sField;
+			};
+			oReader.onload = function (oEvent) {
+				try {
+					var sData = oEvent.target.result;
+					var oWorkbook = XLSX.read(sData, {
+						type: "binary"
+					});
+					var aExcelData = [];
+					oWorkbook.SheetNames.forEach(function (sSheetName) {
+						var oWorksheet = oWorkbook.Sheets[sSheetName];
+						var aSheetData = XLSX.utils.sheet_to_row_object_array(oWorksheet, {
+							defval: ""
+						});
+						aExcelData = aExcelData.concat(aSheetData);
+					});
+					if (!aExcelData.length) {
+						messenger.warning(oResourceBundle.getText("noDataInExcel"));
+						return;
+					}
+					var aForm9A = [];
+					var oCurrentParent = null;
+					var aErrors = [];
+					var iSubSno = 1;
+					aExcelData.forEach(function (oRow, iIndex) {
+						var iExcelRow = iIndex + 2;
+						var sNodeType = String(oRow["Node Type"] || oRow["NodeType"] || "").trim().toUpperCase();
+						if (sNodeType !== "H" && sNodeType !== "I") {
+							aErrors.push("Excel Row " + iExcelRow + ": Invalid Node Type");
+							return;
+						}
+						var oItem = {
+							Text: fnGetValue(oRow, "Text"),
+							Equipment: fnGetValue(oRow, "Equipment"),
+							Head_Account: fnGetValue(oRow, "Head_Account"),
+							Accural_Basis: fnGetValue(oRow, "Accural_Basis"),
+							Discharge_Liabilty: "0.00",
+							Cash_Basis: "",
+							Idc:"",
+							Regulation: fnGetValue(oRow, "Regulation"),
+							Justification: fnGetValue(oRow, "Justification"),
+							Admitted_Cost: ""
+						};
+						if (sNodeType === "H") {
+							if (fnIsEmpty(oItem.Text)) {
+								aErrors.push("Excel Row " + iExcelRow + ": Title is mandatory for Header (H) node.");
+							}
+							oItem.Form9Ahead_9AItem = [];
+							var oExistingSection = aExistingSections[aForm9A.length];
+							if (oExistingSection) {
+								oItem.Sno = oExistingSection.Sno;
+							}
+							aForm9A.push(oItem);
+							oCurrentParent = oItem;
+							iSubSno = 1;
+						} else if (sNodeType === "I") {
+							if (!oCurrentParent) {
+								aErrors.push("Excel Row " + iExcelRow + ": Child (I) node found before a Header (H) node.");
+								return;
+							}
+							var aMandatoryFields = [
+								"Equipment",
+								"Head_Account",
+								"Accural_Basis",
+								"Regulation",
+								"Justification"
+							];
+							aMandatoryFields.forEach(function (sField) {
+								if (fnIsEmpty(oItem[sField])) {
+									aErrors.push("Excel Row " + iExcelRow + ": " + fnGetFieldLabel(sField) + " is mandatory.");
+								}
+							});
+							oItem.SubSno = String(iSubSno).padStart(4, "0");
+							iSubSno++;
+							oCurrentParent.Form9Ahead_9AItem.push(oItem);
+						}
+					});
+					if (aErrors.length > 0) {
+						messenger.error("Please correct the following errors:\n\n" + aErrors.join("\n"), {
+							title: "Excel Validation Errors"
+						});
+						return;
+					}
+					aForm9A.forEach(function (oParent) {
+						oParent.Form9Ahead_9AItem.push({
+							"Equipment": "SUB_TOTAL",
+							"IsSubTotal": "X",
+							"SubSno": String(oParent.Form9Ahead_9AItem.length + 1).padStart(4, "0")
+						});
+					});
+					aForm9A.push(JSON.parse(JSON.stringify(sTotalData)));
+					that.getModel("viewModel").setProperty("/catalog/Form9A", aForm9A);
+					that._calculateForm9ATotals();
+					that.getModel("viewModel").refresh(true);
+					messenger.success(oResourceBundle.getText("excelUploadSuccess"));
+				} catch (oError) {
+					messenger.error(oResourceBundle.getText("excelUploadError"));
+				}
+			};
+			oReader.onerror = function () {
+				messenger.error(oResourceBundle.getText("excelUploadError"));
+			};
+			oReader.readAsBinaryString(oFile);
+		},
+
 	});
 });

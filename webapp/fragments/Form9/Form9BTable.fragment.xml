@@ -24,6 +24,13 @@
         <extension>
             <m:OverflowToolbar>
                 <m:ToolbarSpacer />
+                <m:Button
+                    text="{i18n>DownloadBtnText}"
+                    icon="sap-icon://download"
+                    type="Reject"
+                    press="onDownloadTemplate"
+                    visible="{= ${viewModel>/Status} !== 'Submitted' }"
+                />
                 <u:FileUploader
                     id="fileUploader9B"
                     sameFilenameAllowed="true"
