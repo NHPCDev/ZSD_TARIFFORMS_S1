@@ -16,38 +16,107 @@
     >
         <columns>
             <Column id="idForm15BTableColumnMonth">
-                    <Label id="idForm15BTableLabelMonth" text="{i18n>month}" />
+                <Label
+                    id="idForm15BTableLabelMonth"
+                    text="{i18n>month}"
+                />
             </Column>
 
             <Column id="idForm15BTableColumnSequence">
-                <Label id="idForm15BTableLabelSequence" text="{i18n>sequence}" />
+                <Label
+                    id="idForm15BTableLabelSequence"
+                    text="{i18n>sequence}"
+                />
             </Column>
 
             <Column id="idForm15BTableColumndesignEnergy">
-                <Label id="idForm15BTableLabelDesignEnergy" text="{i18n>designEnergy}" />
+                <Label
+                    id="idForm15BTableLabelDesignEnergy"
+                    text="{i18n>designEnergy}"
+                />
             </Column>
 
             <Column id="idForm15BTableColumnMwContinous">
-                <Label id="idForm15BTableLabelMwContinous" text="{i18n>mwContinous}" />
+                <Label
+                    id="idForm15BTableLabelMwContinous"
+                    text="{i18n>mwContinous}"
+                />
             </Column>
         </columns>
 
         <items>
             <ColumnListItem id="idForm15BTableColumnListItem">
                 <cells>
-                    <Text id="idForm15BTableTextMonth" text="{viewModel>Month}" />
+                    <Text
+                        id="idForm15BTableTextMonth"
+                        text="{viewModel>Month}"
+                    />
 
-                    <Text id="idForm15BTableTextSequence"    text="{viewModel>Sequence}" />
-                    <Text id="idForm15BTableTextDesignEnergy"    text="{viewModel>Design_Energy}" />
+                    <Text
+                        id="idForm15BTableTextSequence"
+                        text="{viewModel>Sequence}"
+                    />
+                    <Text
+                        id="idForm15BTableTextDesignEnergy"
+                        text="{viewModel>Design_Energy}"
+                    />
 
-                    <Input id="idForm15BTableInputMwContinous"
+                    <Input
+                        id="idForm15BTableInputMwContinous"
                         value="{viewModel>Mw_Continuos}"
-                        type="Number"
                         editable="{viewModel>/canEdit}"
                         width="100%"
+                        valueState="{viewModel>Mw_ContinuosValueState}"
+                        valueStateText="{viewModel>Mw_ContinuosValueStateText}"
+                        change="onInputChangeMwContinuos"
                     />
                 </cells>
             </ColumnListItem>
         </items>
     </Table>
+    <!-- Total  -->
+
+    <HBox id="idForm15BTableTotal"
+        width="100%"
+        alignItems="Center"
+        class="sapUiSmallMarginTop sapUiSmallMarginBottom"
+    >
+        <Text id="idForm15BTableTotalLabel"
+            width="25%"
+            text=""
+        />
+        <Text id="idForm15BTableTotalValue"
+            width="25%"
+            text=""
+        />
+
+        <HBox id="idForm15BTableTotalLabel1"
+            width="25%"
+            justifyContent="End"
+            alignItems="Center"
+        >
+            <Text id="idForm15BTableTotalLabel2"
+                text="Total:"
+                wrapping="false"
+                class="sapMTextBold form15BTotal"
+                width="auto"
+                textAlign="End"
+                renderWhitespace="true"
+            />
+        </HBox>
+
+        <HBox id="idForm15BTableTotalValue1"
+            width="50%"
+            justifyContent="End"
+            alignItems="Center"
+        >
+            <Input id="idForm15BTableTotalValue2"
+                value="{viewModel>/Form15B/TotalMwContinuous}"
+                editable="false"
+                textAlign="Center"
+                width="100%"
+                class="sapMTextBold form15BTotalInput"
+            />
+        </HBox>
+    </HBox>
 </core:FragmentDefinition>

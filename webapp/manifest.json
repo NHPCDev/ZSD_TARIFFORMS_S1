@@ -159,6 +159,13 @@
           "target": [
             "TargetForm15B"
           ]
+        },
+        {
+          "name": "RouteForm15A",
+          "pattern": "Form15A/{tariffId}/{formId}/{Fisical_Year}/{Status}",
+          "target": [
+            "TargetForm15A"
+          ]
         }
       ],
       "targets": {
@@ -204,6 +211,10 @@
         "TargetForm15B": {
           "id": "Form15B",
           "name": "Form15B"
+        },
+        "TargetForm15A": {
+          "id": "Form15A",
+          "name": "Form15A"
         }
       }
     },

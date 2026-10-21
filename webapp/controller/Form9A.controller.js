@@ -383,6 +383,7 @@ sap.ui.define([
 				BusyIndicator.show(0);
 				oModel.create("/Form9AheadSet", aPayload, {
 					success: function (oData) {
+						this.fileUploadwithTable();
 						messenger.success(oResourceBundle.getText("form9ASubmitSuccess", sFiscalYear), () => {
 							this.getRouter().navTo("RouteDetail", {
 								tariffId: sTariffID
@@ -642,8 +643,6 @@ sap.ui.define([
 				aAttachments = this.oItemsProcessor,
 				sUrl = oModel.sServiceUrl;
 
-			console.log("Attachments URL", sUrl);
-
 			if (aAttachments && aAttachments.length > 0) {
 				this.iNoOfAttachments = aAttachments.length;
 				this.iUploadCount = 0;
@@ -681,7 +680,6 @@ sap.ui.define([
 		},
 
 		onPluginActivated: function (oEvent) {
-			console.log("FORM 9A onPluginActivated CALLED");
 
 			this.oItemsProcessor = [];
 			this.iNoOfAttachments = 0;
@@ -697,7 +695,6 @@ sap.ui.define([
 			oUploadBtn.setStyle("Emphasized");
 			oUploadBtn.setIconFirst(true);
 		},
-
 		itemValidationCallback: function (oItemInfo) {
 
 			var oItemDetails = oItemInfo.oItem,
@@ -856,7 +853,6 @@ sap.ui.define([
 				}
 			}
 		},
-
 		getAttachments: function () {
 			var oViewModel = this.getModel("viewModel"),
 				oModel = this.getModel();
@@ -871,9 +867,6 @@ sap.ui.define([
 				filters: aFilters,
 
 				success: function (oResp) {
-
-					console.log("Form 9A Attachments:", oResp.results);
-
 					var aAttachments = oResp.results || [];
 
 					aAttachments.forEach(function (oAttachment) {
@@ -939,6 +932,8 @@ sap.ui.define([
 			var oSource = oEvent.getSource();
 			const oContext = oSource.getBindingContext("viewModel");
 
+			var objectAtt = oContext.getObject();
+
 			var oResourceBundle = this.getResourceBundle(),
 				oViewModel = this.getModel("viewModel"),
 				sPath = oContext.getPath(),
@@ -946,19 +941,20 @@ sap.ui.define([
 				sFileName = oViewModel.getProperty(sPath + "/Filename"),
 				sTitle = oResourceBundle.getText("CONFIRM_TITLE");
 
-			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg", sFileName);
+			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg",[objectAtt.Filename]);
 
 			messenger.confirm(sTitle, sMessage, "Confirm", null, function () {
 				this.deleteAttachment(objectAtt);
 			}.bind(this));
 		},
 		deleteAttachment: function (objectAtt) {
+			console.log("Deleting attachment:", objectAtt);
 
 			var oResourceBundle = this.getResourceBundle(),
 				oModel = this.getModel();
 
 			var sUrl = oModel.createKey("/AttachmentSet", {
-				Formid: objectAtt.Formid,
+				Formid: this._FormID,
 				dateh: objectAtt.dateh,
 				location: objectAtt.location,
 				flagyn: objectAtt.flagyn,
@@ -995,7 +991,6 @@ sap.ui.define([
 				}.bind(this)
 			});
 		},
-
 		onRemoveAttachment: function (oEvent) {
 
 			var oSource = oEvent.getSource();
@@ -1011,7 +1006,7 @@ sap.ui.define([
 				sFileName = oViewModel.getProperty(sPath + "/Filename"),
 				sTitle = oResourceBundle.getText("CONFIRM_TITLE");
 
-			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg", sFileName);
+			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg",[sFileName]);
 
 			messenger.confirm(sTitle, sMessage, "Confirm", null, function () {
 

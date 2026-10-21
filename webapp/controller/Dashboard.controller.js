@@ -196,21 +196,16 @@ sap.ui.define([
 
                 //Tariff ID
                 if (oFilterData.TariffId) {
-                    aSearchFilter.push(this.createFilter("tariffId", "Contains", oFilterData.TariffId));
+                    aSearchFilter.push(this.createFilter("Tariff_ID", "Contains", oFilterData.TariffId));
                 };
                 // Profit Center
                 if (oFilterData.ProfitCenter) {
-                    aSearchFilter.push(this.createFilter("profitCenter", "EQ", oFilterData.ProfitCenter));
+                    aSearchFilter.push(this.createFilter("Profit_center", "EQ", oFilterData.ProfitCenter));
                 };
                 // Plant
                 if (oFilterData.Plant) {
                     aSearchFilter.push(this.createFilter("Plant", "EQ", oFilterData.Plant));
-                }
-                // // Quarter
-                // if (oFilterData.Quarter && oFilterData.Quarter !== "ALL") {
-                //     aSearchFilter.push(this.createFilter("Period", "EQ", oFilterData.Quarter));
-                // };
-
+                };
                 // Status
                 if (oFilterData.Status) {
                     aSearchFilter.push(this.createFilter("Status", "EQ", oFilterData.Status));
@@ -249,36 +244,36 @@ sap.ui.define([
 
                 // Profit Center
                 if (!oCreateTariff.profitCenter) {
-                    oViewModel.setProperty( "/createTariff/profitCenterValueState", ValueState.Error  );
-                    oViewModel.setProperty( "/createTariff/profitCenterValueStateText",  this.getResourceBundle().getText("profitCenterRequired") );
+                    oViewModel.setProperty("/createTariff/profitCenterValueState", ValueState.Error);
+                    oViewModel.setProperty("/createTariff/profitCenterValueStateText", this.getResourceBundle().getText("profitCenterRequired"));
                     bValid = false;
                 }
 
                 // Plant
                 if (!oCreateTariff.plant) {
-                    oViewModel.setProperty( "/createTariff/plantValueState", ValueState.Error );
-                    oViewModel.setProperty( "/createTariff/plantValueStateText",  this.getResourceBundle().getText("plantRequired"));
+                    oViewModel.setProperty("/createTariff/plantValueState", ValueState.Error);
+                    oViewModel.setProperty("/createTariff/plantValueStateText", this.getResourceBundle().getText("plantRequired"));
                     bValid = false;
                 }
 
                 // Tariff Period
                 if (!oCreateTariff.tariffPeriod) {
-                    oViewModel.setProperty(  "/createTariff/tariffPeriodValueState", ValueState.Error );
-                    oViewModel.setProperty( "/createTariff/tariffPeriodValueStateText", this.getResourceBundle().getText("tariffPeriodRequired") );
+                    oViewModel.setProperty("/createTariff/tariffPeriodValueState", ValueState.Error);
+                    oViewModel.setProperty("/createTariff/tariffPeriodValueStateText", this.getResourceBundle().getText("tariffPeriodRequired"));
                     bValid = false;
                 }
 
                 // Tariff Stage
                 if (!oCreateTariff.tariffStage) {
-                    oViewModel.setProperty(  "/createTariff/tariffStageValueState",  ValueState.Error );
-                    oViewModel.setProperty( "/createTariff/tariffStageValueStateText", this.getResourceBundle().getText("tariffStageRequired"));
+                    oViewModel.setProperty("/createTariff/tariffStageValueState", ValueState.Error);
+                    oViewModel.setProperty("/createTariff/tariffStageValueStateText", this.getResourceBundle().getText("tariffStageRequired"));
                     bValid = false;
                 }
 
                 // Plant Stage
                 if (!oCreateTariff.plantStage) {
-                    oViewModel.setProperty( "/createTariff/plantStageValueState", ValueState.Error);
-                    oViewModel.setProperty( "/createTariff/plantStageValueStateText", this.getResourceBundle().getText("plantStageRequired"));
+                    oViewModel.setProperty("/createTariff/plantStageValueState", ValueState.Error);
+                    oViewModel.setProperty("/createTariff/plantStageValueStateText", this.getResourceBundle().getText("plantStageRequired"));
                     bValid = false;
                 }
 
@@ -463,45 +458,103 @@ sap.ui.define([
                 oDialog.setSupportMultiselect(false);
                 oDialog.setSupportRanges(false);
             },
-            onFilterBarSearch: function () {
+            // onFilterBarSearch: function () {
 
-                var sSearch = this._oBasicSearchField.getValue();
+            //     var sSearch = this._oBasicSearchField.getValue();
+            //     this._performVHSearch(sSearch);
+            // },
+            // _performVHSearch: function (sValue) {
+
+            //     var sValueHelpName = this._currSource.data("valuehelp");
+            //     var oFilter;
+
+            //     if (sValueHelpName === "profitCenterValueHelpRequest") {
+
+            //         oFilter = new Filter({
+            //             filters: [
+            //                 new Filter("Prctr", FilterOperator.Contains, sValue),
+            //                 new Filter("Ktext", FilterOperator.Contains, sValue)
+            //             ],
+            //             and: false
+            //         });
+
+            //     } else if (sValueHelpName === "plantValueHelpRequest") {
+
+            //         oFilter = new Filter({
+            //             filters: [
+            //                 new Filter("Werks", FilterOperator.Contains, sValue),
+            //                 new Filter("Name1", FilterOperator.Contains, sValue)
+            //             ],
+            //             and: false
+            //         });
+            //     }
+
+            //     if (oFilter) {
+            //         this._filterTable(oFilter);
+            //     }
+            // },  
+            // _filterTable: function (oFilter) {
+
+            //     var oDialog = this._oValueHelpDialog;
+
+            //     if (!oDialog) {
+            //         return;
+            //     }
+
+            //     oDialog.getTableAsync().then(function (oTable) {
+
+            //         // For sap.ui.table.Table
+            //         if (oTable.bindRows) {
+
+            //             var oBinding = oTable.getBinding("rows");
+
+            //             if (oBinding) {
+            //                 oBinding.filter(oFilter);
+            //             }
+            //         }
+
+            //         // For sap.m.Table
+            //         if (oTable.bindItems) {
+
+            //             var oItemBinding = oTable.getBinding("items");
+
+            //             if (oItemBinding) {
+            //                 oItemBinding.filter(oFilter);
+            //             }
+            //         }
+
+            //         oDialog.update();
+
+            //     });
+            // },
+
+            onFilterBarSearch: function () {
+                var sSearch = this._oBasicSearchField.getValue().trim();
                 this._performVHSearch(sSearch);
             },
 
             _performVHSearch: function (sValue) {
-
                 var sValueHelpName = this._currSource.data("valuehelp");
-                var oFilter;
+                var aFilters = [];
 
-                if (sValueHelpName === "profitCenterValueHelpRequest") {
-
-                    oFilter = new Filter({
-                        filters: [
+                if (sValue) {
+                    if (sValueHelpName === "profitCenterValueHelpRequest") {
+                        aFilters = [
                             new Filter("Prctr", FilterOperator.Contains, sValue),
                             new Filter("Ktext", FilterOperator.Contains, sValue)
-                        ],
-                        and: false
-                    });
-
-                } else if (sValueHelpName === "plantValueHelpRequest") {
-
-                    oFilter = new Filter({
-                        filters: [
+                        ];
+                    } else if (sValueHelpName === "plantValueHelpRequest") {
+                        aFilters = [
                             new Filter("Werks", FilterOperator.Contains, sValue),
                             new Filter("Name1", FilterOperator.Contains, sValue)
-                        ],
-                        and: false
-                    });
+                        ];
+                    }
                 }
 
-                if (oFilter) {
-                    this._filterTable(oFilter);
-                }
+                this._filterTable(aFilters.length ? new Filter({ filters: aFilters, and: false }) : null);
             },
 
             _filterTable: function (oFilter) {
-
                 var oDialog = this._oValueHelpDialog;
 
                 if (!oDialog) {
@@ -509,29 +562,19 @@ sap.ui.define([
                 }
 
                 oDialog.getTableAsync().then(function (oTable) {
+                    var oBinding;
 
-                    // For sap.ui.table.Table
                     if (oTable.bindRows) {
-
-                        var oBinding = oTable.getBinding("rows");
-
-                        if (oBinding) {
-                            oBinding.filter(oFilter);
-                        }
+                        oBinding = oTable.getBinding("rows");
+                    } else if (oTable.bindItems) {
+                        oBinding = oTable.getBinding("items");
                     }
 
-                    // For sap.m.Table
-                    if (oTable.bindItems) {
-
-                        var oItemBinding = oTable.getBinding("items");
-
-                        if (oItemBinding) {
-                            oItemBinding.filter(oFilter);
-                        }
+                    if (oBinding) {
+                        oBinding.filter(oFilter ? [oFilter] : []);
                     }
 
                     oDialog.update();
-
                 });
             },
             onValueHelpCancelPress: function () {

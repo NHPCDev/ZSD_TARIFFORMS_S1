@@ -163,7 +163,7 @@
                         </OverflowToolbar>
                     </headerToolbar>
                     <columns>
-                        <Column id="idColHdrDashComp1">
+                        <Column id="idColHdrDashComp1" width="20%" >
                             <Text
                                 id="idColHdrTextTrfDash1"
                                 text="{i18n>tariffId}"
@@ -221,7 +221,7 @@
 
                                 <Text
                                     id="idcellValComp2"
-                                    text="{profitCenter}"
+                                    text="{Profit_center}"
                                 />
                                 <!-- <ObjectIdentifier id="idcellValComp2" title="{LocationId}" text="{LocationDesc}" /> -->
 
@@ -234,7 +234,10 @@
 
                                 <Text
                                     id="idcellValComp5"
-                                    text="{Tf_Stage_id}"
+                                    text="{
+                                        path:'Tf_Stage_id',
+                                        formatter: '.formatter.formatTariffStageText'
+                                    }"
                                 />
 
                                 <Text

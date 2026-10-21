@@ -116,6 +116,7 @@ sap.ui.define([
                     return "Information";
 
                 case "DRAFT":
+                case "D":
                 case "PENDING":
                     return "Warning";
 

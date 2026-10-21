@@ -63,7 +63,9 @@
                 />
                 <Input
                     id="formStatusInputBase15B"
-                    value="{viewModel>/Form15B/Status}"
+                    value="{
+                            path:'viewModel>/Form15B/Status',
+                            formatter:'.formatter.formatStatusText' }"
                     editable="false"
                 />
 

@@ -1,0 +1,181 @@
+<mvc:View
+    controllerName="com.nhpc.zsdtarifformss1.controller.Form15A"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:uxap="sap.uxap"
+    displayBlock="true"
+    class="sapUiSizeCompact"
+>
+    <App id="idReportApp15A">
+        <pages>
+            <Page
+                id="idReportPage15A"
+                showHeader="false"
+            >
+                <content>
+                    <uxap:ObjectPageLayout
+                        id="idReportObjectPageLayout15A"
+                        upperCaseAnchorBar="false"
+                    >
+                        <uxap:headerTitle>
+                            <uxap:ObjectPageDynamicHeaderTitle id="idReportObjectPageDynamicHeaderTitle15A">
+                                <uxap:expandedHeading>
+                                    <HBox id="idReportObjectPageExpandedHeading15A"
+                                        fitContainer="true"
+                                        alignItems="Center"
+                                    >
+                                        <Avatar id="idReportObjectPageExpandedHeadingAvatar15A"
+                                            src="sap-icon://activity-items"
+                                            class="sapUiTinyMarginEnd"
+                                            displayShape="Square"
+                                        />
+                                        <VBox id="idReportObjectPageExpandedHeadingVBox15A" class="sapUiTinyMarginBegin">
+                                            <Title
+                                                id="objPageHeader15A"
+                                                text="{i18n>form15APage}"
+                                                wrapping="true"
+                                            />
+                                            <ObjectStatus id="objPageHeaderStatus15A"
+                                                title="{i18n>status}"
+                                                text="{path:'viewModel>/Status',formatter:'.formatter.formatStatusText'}"
+                                                class="sapMObjectStatusMedium statusBoldText"
+                                                state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
+                                            />
+                                        </VBox>
+                                    </HBox>
+                                </uxap:expandedHeading>
+                                <uxap:snappedHeading>
+                                    <HBox id="idReportObjectPageSnappedHeading15A"
+                                        fitContainer="true"
+                                        alignItems="Center"
+                                    >
+                                        <Avatar id="idReportObjectPageSnappedHeadingAvatar15A"
+                                            src="sap-icon://activity-items"
+                                            class="sapUiTinyMarginEnd"
+                                            displayShape="Square"
+                                        />
+                                        <VBox id="idReportObjectPageSnappedHeadingVBox15A" class="sapUiTinyMarginBegin">
+                                            <Title
+                                                id="objPageHeadersnapped15A"
+                                                text="{i18n>form15APage}"
+                                                wrapping="true"
+                                            />
+                                            <ObjectStatus id="objPageHeaderStatussnapped15A"
+                                                title="{i18n>status}"
+                                                text="{path:'viewModel>/Status',formatter:'.formatter.formatStatusText'}"
+                                                class="sapMObjectStatusMedium statusBoldText"
+                                                state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
+                                            />
+                                        </VBox>
+                                    </HBox>
+                                </uxap:snappedHeading>
+                            </uxap:ObjectPageDynamicHeaderTitle>
+                        </uxap:headerTitle>
+                        <uxap:headerContent>
+                            <FlexBox id="idReportObjectPageHeaderContent15A"
+                                fitContainer="true"
+                                wrap="Wrap"
+                            />
+                        </uxap:headerContent>
+                        <uxap:sections>
+                            <uxap:ObjectPageSection id="idReportObjectPageSectionGeneral15A"
+                                title="{i18n>generalDetails}"
+                                titleUppercase="false"
+                            >
+                                <uxap:subSections>
+                                    <uxap:ObjectPageSubSection id="idReportObjectPageSubSectionGeneral15A">
+                                        <uxap:blocks>
+                                            <VBox id="idReportObjectPageSubSectionGeneralVBox15A">
+                                                <core:Fragment
+                                                    fragmentName="com.nhpc.zsdtarifformss1.fragments.Form15A.BasicDetails"
+                                                    type="XML"
+                                                />
+                                            </VBox>
+                                        </uxap:blocks>
+                                    </uxap:ObjectPageSubSection>
+                                </uxap:subSections>
+                            </uxap:ObjectPageSection>
+                            <uxap:ObjectPageSection id="idReportObjectPageSectionForm15ADetails15A"
+                                title="{i18n>form15ADetails}"
+                                titleUppercase="false"
+                            >
+                                <uxap:subSections>
+                                    <uxap:ObjectPageSubSection id="idReportObjectPageSubSectionForm15ADetails15A">
+                                        <uxap:blocks>
+                                            <VBox id="idReportObjectPageSubSectionForm15ADetailsVBox15A">
+                                                <core:Fragment
+                                                    fragmentName="com.nhpc.zsdtarifformss1.fragments.Form15A.Form15ATable"
+                                                    type="XML"
+                                                />
+                                            </VBox>
+                                        </uxap:blocks>
+                                    </uxap:ObjectPageSubSection>
+                                </uxap:subSections>
+                            </uxap:ObjectPageSection>
+
+                            <!-- Remarks Section -->
+                            <uxap:ObjectPageSection id="idReportObjectPageSectionForm15ARemarks15A"
+                                title="{i18n>remarks}"
+                                titleUppercase="false"
+                            >
+                                <uxap:subSections>
+                                    <uxap:ObjectPageSubSection id="idReportObjectPageSubSectionForm15ARemarks15A">
+                                        <uxap:blocks>
+                                            <VBox id="idReportObjectPageSubSectionForm15ARemarksVBox15A">
+                                                <core:Fragment
+                                                    fragmentName="com.nhpc.zsdtarifformss1.fragments.Form15A.Remarks"
+                                                    type="XML"
+                                                />
+                                            </VBox>
+                                        </uxap:blocks>
+                                    </uxap:ObjectPageSubSection>
+                                </uxap:subSections>
+                            </uxap:ObjectPageSection>
+                            
+                            <!-- Attachments Section -->
+                            <uxap:ObjectPageSection id="idReportObjectPageSectionAttachments15A"
+                                title="{i18n>attachments}"
+                                titleUppercase="false"
+                            >
+                                <uxap:subSections>
+                                    <uxap:ObjectPageSubSection id="idReportObjectPageSubSectionAttachments15A">
+                                        <uxap:blocks>
+                                            <VBox id="idReportObjectPageSubSectionAttachmentsVBox15A">
+                                                <core:Fragment
+                                                    fragmentName="com.nhpc.zsdtarifformss1.fragments.Attachments"
+                                                    type="XML"
+                                                />
+                                            </VBox>
+                                        </uxap:blocks>
+                                    </uxap:ObjectPageSubSection>
+                                </uxap:subSections>
+                            </uxap:ObjectPageSection>
+
+                            
+                        </uxap:sections>
+                    </uxap:ObjectPageLayout>
+                </content>
+                <footer>
+                    <OverflowToolbar id="idReportOverflowToolbar15A">
+                        <ToolbarSpacer id="idReportToolbarSpacer15A" />
+                        <Button id="idReportSaveBtn15A"
+                            text="{i18n>saveBtnText}"
+                            type="Critical"
+                            press="handleSaveBtnPress"
+                            icon="sap-icon://save"
+                            visible="{= ${viewModel>/Status} !== 'Submitted' }"
+                        />
+                        <Button id="idReportSubmitBtn15A"
+                            text="{i18n>submitBtnText}"
+                            type="Success"
+                            press="handleSubmitBtnPress"
+                            icon="sap-icon://create"
+                            visible="{= ${viewModel>/Status} !== 'Submitted' }"
+                        />
+                    </OverflowToolbar>
+                </footer>
+            </Page>
+        </pages>
+    </App>
+</mvc:View>

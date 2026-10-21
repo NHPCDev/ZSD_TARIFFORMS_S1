@@ -1,0 +1,122 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Table
+        id="idForm15ATable"
+        width="100%"
+        fixedLayout="true"
+        visible="true"
+        growing="true"
+        growingThreshold="20"
+        sticky="ColumnHeaders,HeaderToolbar"
+        items="{viewModel>/Form15A/Items}"
+        updateFinished="onManageTaskTableUpdateFinish"
+        alternateRowColors="true"
+    >
+        <columns>
+            <Column id="idForm15ATableColumnMonth">
+                <Label
+                    id="idForm15ATableLabelMonth"
+                    text="{i18n>month}"
+                />
+            </Column>
+
+            <Column id="idForm15ATableColumnSequence">
+                <Label
+                    id="idForm15ATableLabelSequence"
+                    text="{i18n>sequence}"
+                />
+            </Column>
+
+            <Column id="idForm15ATableColumndesignEnergy">
+                <Label
+                    id="idForm15ATableLabelDesignEnergy"
+                    text="{i18n>designEnergy}"
+                />
+            </Column>
+
+            <Column id="idForm15ATableColumnMwContinous">
+                <Label
+                    id="idForm15ATableLabelMwContinous"
+                    text="{i18n>mwContinous}"
+                />
+            </Column>
+        </columns>
+
+        <items>
+            <ColumnListItem id="idForm15ATableColumnListItem">
+                <cells>
+                    <Text
+                        id="idForm15ATableTextMonth"
+                        text="{viewModel>Month}"
+                    />
+
+                    <Text
+                        id="idForm15ATableTextSequence"
+                        text="{viewModel>Sequence}"
+                    />
+                    <Text
+                        id="idForm15ATableTextDesignEnergy"
+                        text="{viewModel>Design_Energy}"
+                    />
+
+                    <Input
+                        id="idForm15ATableInputMwContinous"
+                        value="{viewModel>Mw_Continuos}"
+                        editable="{viewModel>/canEdit}"
+                        width="100%"
+                        valueState="{viewModel>Mw_ContinuosValueState}"
+                        valueStateText="{viewModel>Mw_ContinuosValueStateText}"
+                        change="onInputChangeMwContinuos"
+                    />
+                </cells>
+            </ColumnListItem>
+        </items>
+    </Table>
+    <!-- Total  -->
+
+    <HBox id="idForm15ATableTotal"
+        width="100%"
+        alignItems="Center"
+        class="sapUiSmallMarginTop sapUiSmallMarginBottom"
+    >
+        <Text id="idForm15ATableTotalLabel"
+            width="25%"
+            text=""
+        />
+        <Text id="idForm15ATableTotalValue"
+            width="25%"
+            text=""
+        />
+
+        <HBox id="idForm15ATableTotalLabel1"
+            width="25%"
+            justifyContent="End"
+            alignItems="Center"
+        >
+            <Text id="idForm15ATableTotalLabel2"
+                text="Total:"
+                wrapping="false"
+                class="sapMTextBold form15BTotal"
+                width="auto"
+                textAlign="End"
+                renderWhitespace="true"
+            />
+        </HBox>
+
+        <HBox id="idForm15ATableTotalValue1"
+            width="50%"
+            justifyContent="End"
+            alignItems="Center"
+        >
+            <Input id="idForm15ATableTotalValue2"
+                value="{viewModel>/Form15A/TotalMwContinuous}"
+                editable="false"
+                textAlign="Center"
+                width="100%"
+                class="sapMTextBold form15BTotalInput"
+            />
+        </HBox>
+    </HBox>
+</core:FragmentDefinition>

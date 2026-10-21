@@ -9,7 +9,6 @@
         <Label
             id="idForm15BRemarksLabel"
             text=""
-            
         />
 
         <TextArea
@@ -19,6 +18,9 @@
             rows="6"
             width="100%"
             growing="true"
+            valueState="{viewModel>/Form15B/RemarksValueState}"
+            valueStateText="{viewModel>/Form15B/RemarksValueStateText}"
+            change="onInputChange"
         />
     </VBox>
 </core:FragmentDefinition>
