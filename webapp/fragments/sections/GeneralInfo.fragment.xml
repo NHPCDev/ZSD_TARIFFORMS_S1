@@ -81,6 +81,36 @@
                     editable="false"
                 />
 
+                <Label
+                    text="{i18n>plant}"
+                />
+                <Input
+                    value="{viewModel>Plant}"
+                    editable="false"
+                />
+                <Label
+                    text="{i18n>nameOfPetitioner}"
+                />
+                <Input
+                    value="{viewModel>Company}"
+                    editable="false"
+                />
+                <Label
+                    text="{i18n>nameOfGeneratingStation}"
+                />
+                <Input
+                    value="{viewModel>Generating_Station}"
+                    editable="false"
+                />
+                <Label
+                    text="{i18n>cod}"
+                />
+                <DatePicker
+                    value="{viewModel>Cod}"
+                    valueFormat="yyyyMMdd"
+                    displayFormat="dd.MM.yyyy"
+                    editable="false"
+                />
             </f:content>
         </f:SimpleForm>
     </VBox>
