@@ -1,0 +1,27 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+>
+    <VBox id="generalInfoVBoxBase8">
+        <f:SimpleForm
+            id="generalInfoFormBase8"
+            editable="true"
+            layout="ColumnLayout"
+            columnsXL="2"
+            columnsL="2"
+            columnsM="2"
+            singleContainerFullSize="true"
+            binding="{viewModel>/formDetails}"
+        >
+            <f:content>
+                <Label text="{i18n>type}" />
+                <Input value="{viewModel>Surge_Type}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Label text="{i18n>diameter}" />
+                <Input value="{viewModel>Diameter}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
+                <Label text="{i18n>height}" />
+                <Input value="{viewModel>Surge_Height}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+            </f:content>
+        </f:SimpleForm>
+    </VBox>
+</core:FragmentDefinition>

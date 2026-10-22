@@ -1,0 +1,27 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+>
+    <VBox id="generalInfoVBoxBase5">
+        <f:SimpleForm
+            id="generalInfoFormBase5"
+            editable="true"
+            layout="ColumnLayout"
+            columnsXL="2"
+            columnsL="2"
+            columnsM="2"
+            singleContainerFullSize="true"
+            binding="{viewModel>/formDetails}"
+        >
+            <f:content>
+                <Label text="{i18n>fullReservoirLevel}" />
+                <Input value="{viewModel>Full_Reservior_Level}" editable="false" />
+                <Label text="{i18n>minimumDrawDownLevel}" />
+                <Input value="{viewModel>Minimum_Draw_DownLevel}" editable="false" />
+                <Label text="{i18n>liveStorage}" />
+                <Input value="{viewModel>Live_Storage}" editable="false" />
+            </f:content>
+        </f:SimpleForm>
+    </VBox>
+</core:FragmentDefinition>

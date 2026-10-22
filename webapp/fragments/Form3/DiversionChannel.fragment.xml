@@ -1,0 +1,25 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+>
+    <VBox id="generalInfoVBoxBase2">
+        <f:SimpleForm
+            id="generalInfoFormBase2"
+            editable="true"
+            layout="ColumnLayout"
+            columnsXL="2"
+            columnsL="2"
+            columnsM="2"
+            singleContainerFullSize="true"
+            binding="{viewModel>/formDetails}"
+        >
+            <f:content>
+                <Label text="{i18n>size/shape}" required="true"/>
+                <Input value="{viewModel>Size_Shape}" required="true" valueState="{viewModel>/valueState/Size_Shape}" valueStateText="{viewModel>/valueStateText/Size_Shape}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
+                <Label text="{i18n>length}" required="true" />
+                <Input value="{viewModel>Length}" required="true" valueState="{viewModel>/valueState/Length}" valueStateText="{viewModel>/valueStateText/Length}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
+            </f:content>
+        </f:SimpleForm>
+    </VBox>
+</core:FragmentDefinition>

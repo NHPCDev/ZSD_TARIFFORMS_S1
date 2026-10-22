@@ -1,0 +1,27 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+>
+    <VBox id="generalInfoVBoxBase7">
+        <f:SimpleForm
+            id="generalInfoFormBase7"
+            editable="true"
+            layout="ColumnLayout"
+            columnsXL="2"
+            columnsL="2"
+            columnsM="2"
+            singleContainerFullSize="true"
+            binding="{viewModel>/formDetails}"
+        >
+            <f:content>
+                <Label text="{i18n>sizeAndType}" />
+                <Input value="{viewModel>Head_Race_Size_Type}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
+                <Label text="{i18n>length}" />
+                <Input value="{viewModel>Head_Race_Length}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Label text="{i18n>designDischarge}" />
+                <Input value="{viewModel>Design_Discharge}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+            </f:content>
+        </f:SimpleForm>
+    </VBox>
+</core:FragmentDefinition>

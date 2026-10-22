@@ -1,0 +1,37 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+>
+    <VBox id="generalInfoVBoxBase10">
+        <f:SimpleForm
+            id="generalInfoFormBase10"
+            editable="true"
+            layout="ColumnLayout"
+            columnsXL="2"
+            columnsL="2"
+            columnsM="2"
+            singleContainerFullSize="true"
+            binding="{viewModel>/formDetails}"
+        >
+            <f:content>
+                <Label text="{i18n>installedCapacity}" required="true" />
+                <Input value="{viewModel>Installed_Capacity}" editable="false" required="true" />
+                <Label text="{i18n>typeOfTurbine}" required="true" />
+                <Input value="{viewModel>Turbine_Type}" required="true" valueState="{viewModel>/valueState/Turbine_Type}" valueStateText="{viewModel>/valueStateText/Turbine_Type}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Label text="{i18n>ratedHead}" required="true" />
+                <Input value="{viewModel>Rated_Head}" required="true" valueState="{viewModel>/valueState/Rated_Head}" valueStateText="{viewModel>/valueStateText/Rated_Head}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Label text="{i18n>ratedDischarge}" required="true" />
+                <Input value="{viewModel>Rated_Discharge}" editable="false" required="true"/>
+                <Label text="{i18n>headAtFullReservoirLevel}" required="true"/>
+                <Input value="{viewModel>Head_Full_Reservoir}" editable="false" required="true"/>
+                <Label text="{i18n>headAtMinimumDrawDownLevel}" required="true" />
+                <Input value="{viewModel>Head_Minimum_Draw}" editable="false" required="true"/>
+                <Label text="{i18n>mwCapabilityAtFRL}" required="true"/>
+                <Input value="{viewModel>MW_Capability_FRL}" editable="false" required="true"/>
+                <Label text="{i18n>mwCapabilityAtMDDL}" required="true"/>
+                <Input value="{viewModel>MW_Capability_MDDL}" editable="false" required="true"/>
+            </f:content>
+        </f:SimpleForm>
+    </VBox>
+</core:FragmentDefinition>

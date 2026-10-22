@@ -1,0 +1,25 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+>
+    <VBox id="generalInfoVBoxBase1">
+        <f:SimpleForm
+            id="generalInfoFormBase1"
+            editable="true"
+            layout="ColumnLayout"
+            columnsXL="2"
+            columnsL="2"
+            columnsM="2"
+            singleContainerFullSize="true"
+            binding="{viewModel>/formDetails}"
+        >
+            <f:content>
+                <Label text="{i18n>state/dist}" required="true" />
+                <Input value="{viewModel>State_District}" editable="false" required="true" />
+                <Label text="{i18n>river}" required="true" />
+                <Input value="{viewModel>River}" required="true" valueState="{viewModel>/valueState/River}" valueStateText="{viewModel>/valueStateText/River}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
+            </f:content>
+        </f:SimpleForm>
+    </VBox>
+</core:FragmentDefinition>

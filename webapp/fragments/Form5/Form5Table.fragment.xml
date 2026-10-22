@@ -1,0 +1,127 @@
+<core:FragmentDefinition
+    xmlns="sap.ui.table"
+    xmlns:core="sap.ui.core"
+    xmlns:m="sap.m"
+    xmlns:rowmodes="sap.ui.table.rowmodes"
+    xmlns:u="sap.ui.unified"
+    class="sapUiSizeCompact"
+>
+    <TreeTable
+        id="idForm5Table"
+        rows="{
+            path: 'viewModel>/catalog/Form5',
+            parameters: {
+                arrayNames: ['Form5head_item']
+            }
+        }"
+        selectionMode="Single"
+        selectionBehavior="RowOnly"
+        enableSelectAll="true"
+        fixedColumnCount="2"
+        class="sapUiSizeCompact"
+        alternateRowColors="true"
+    >
+        <extension>
+            <m:OverflowToolbar>
+                <m:ToolbarSpacer />
+            </m:OverflowToolbar>
+        </extension>
+        <rowMode>
+            <rowmodes:Fixed
+                rowContentHeight="70"
+                rowCount="4"
+            />
+        </rowMode>
+        <columns>
+            <Column
+                width="200px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>sno}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:Text
+                        text="{viewModel>Sno}"
+                        wrapping="true"
+                        class="sapUiSmallMargin statusBoldText"
+                    />
+                </template>
+            </Column>
+            <Column
+                width="800px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>particulars}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:Text
+                        text="{viewModel>Particulars}"
+                        wrapping="true"
+                        class="sapUiSmallMargin statusBoldText"
+                    />
+                </template>
+            </Column>
+            <Column
+                width="400px"
+                hAlign="Center"
+            >
+                <m:Label
+                    text="{i18n>value}"
+                    wrapping="true"
+                />
+                <template>
+                    <m:VBox width="100%">
+                        <m:Input
+                            value="{viewModel>Value}"
+                            width="100%"
+                            change="calculateForm5Total"
+                            editable="{viewModel>/canEdit}"
+                            valueState="{viewModel>_ValueState}"
+                            valueStateText="{viewModel>_ValueStateText}"
+                            visible="{= ${viewModel>RowType}==='PARENT' }"
+                        />
+                        <m:TextArea
+                            value="{viewModel>Value}"
+                            width="100%"
+                            rows="3"
+                            growing="false"
+                            editable="{viewModel>/canEdit}"
+                            change="removeValueState"
+                            valueState="{viewModel>_ValueState}"
+                            valueStateText="{viewModel>_ValueStateText}"
+                            visible="{= ${viewModel>RowType}!=='PARENT' }"
+                        />
+                    </m:VBox>
+                </template>
+            </Column>
+        </columns>
+    </TreeTable>
+    <m:HBox
+        width="100%"
+        alignItems="Center"
+        class="sapUiSmallMarginTop"
+    >
+        <m:Text
+            text=""
+            width="400px"
+        />
+
+        <m:Text
+            text="{i18n>total}"
+            width="400px"
+            textAlign="Center"
+            class="statusBoldText"
+        />
+
+        <m:Input
+            value="{viewModel>/Form5Total}"
+            width="1000px"
+            editable="false"
+            textAlign="End"
+        />
+    </m:HBox>
+</core:FragmentDefinition>

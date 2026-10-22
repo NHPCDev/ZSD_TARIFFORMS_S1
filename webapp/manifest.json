@@ -126,6 +126,20 @@
           ]
         },
         {
+          "name": "RouteForm3",
+          "pattern": "Form3/{tariffId}/{formId}/{Status}",
+          "target": [
+            "TargetForm3"
+          ]
+        },
+        {
+          "name": "RouteForm5",
+          "pattern": "Form5/{tariffId}/{formId}/{Status}",
+          "target": [
+            "TargetForm5"
+          ]
+        },
+        {
           "name": "RouteForm9A",
           "pattern": "Form9A/{tariffId}/{formId}/{Fisical_Year}/{Status}",
           "target": [
@@ -179,6 +193,20 @@
           "clearControlAggregation": false,
           "id": "Detail",
           "name": "Detail"
+        },
+        "TargetForm3": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "id": "Form3",
+          "name": "Form3"
+        },
+        "TargetForm5": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "id": "Form5",
+          "name": "Form5"
         },
         "TargetForm9A": {
           "viewType": "XML",
