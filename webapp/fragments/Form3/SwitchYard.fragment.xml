@@ -16,15 +16,15 @@
         >
             <f:content>
                 <Label text="{i18n>typeOfSwitchGear}" required="true" />
-                <Input value="{viewModel>Switchyard_Type}" required="true" valueState="{viewModel>/valueState/Switchyard_Type}" valueStateText="{viewModel>/valueStateText/Switchyard_Type}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
+                <Input value="{viewModel>Switchyard_Type}" change=".onInputChange" required="true" valueState="{viewModel>/valueState/Switchyard_Type}" valueStateText="{viewModel>/valueStateText/Switchyard_Type}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
                 <Label text="{i18n>noOfGeneratorBays}" required="true" />
                 <Input value="{viewModel>Generator_Bays}" required="true" editable="false"/>
                 <Label text="{i18n>noOfBusCouplerBays}" required="true" />
                 <Input value="{viewModel>Bus_Coupler_Bays}" editable="false" required="true"/>
                 <Label text="{i18n>noOfLineBays}" required="true" />
-                <Input value="{viewModel>Line_Bays}" required="true" valueState="{viewModel>/valueState/Line_Bays}" valueStateText="{viewModel>/valueStateText/Line_Bays}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Input value="{viewModel>Line_Bays}" change=".onDecimalNumberChange" required="true" valueState="{viewModel>/valueState/Line_Bays}" valueStateText="{viewModel>/valueStateText/Line_Bays}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
                 <Label text="{i18n>efficiency}" required="true" />
-                <Input value="{viewModel>Turbine_Generator }" required="true" valueState="{viewModel>/valueState/Turbine_Generator}" valueStateText="{viewModel>/valueStateText/Turbine_Generator}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Input value="{viewModel>Turbine_Generator}" change=".onDecimalNumberChange" required="true" valueState="{viewModel>/valueState/Turbine_Generator}" valueStateText="{viewModel>/valueStateText/Turbine_Generator}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
             </f:content>
         </f:SimpleForm>
     </VBox>

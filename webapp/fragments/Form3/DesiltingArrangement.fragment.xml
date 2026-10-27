@@ -16,11 +16,11 @@
         >
             <f:content>
                 <Label text="{i18n>type}" />
-                <Input value="{viewModel>Desilting_Type}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Input value="{viewModel>Desilting_Type}" change=".onInputChange" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
                 <Label text="{i18n>numberAndSize}" />
-                <Input value="{viewModel>Number_Size}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Input value="{viewModel>Number_Size}" change=".onInputChange" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
                 <Label text="{i18n>particleSizeToBeRemoved}" />
-                <Input value="{viewModel>Particle_Size}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
+                <Input value="{viewModel>Particle_Size}" change=".onInputChange" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
             </f:content>
         </f:SimpleForm>
     </VBox>

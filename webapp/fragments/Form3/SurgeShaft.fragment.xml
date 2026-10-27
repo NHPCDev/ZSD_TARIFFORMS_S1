@@ -16,11 +16,11 @@
         >
             <f:content>
                 <Label text="{i18n>type}" />
-                <Input value="{viewModel>Surge_Type}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Input value="{viewModel>Surge_Type}" change=".onInputChange" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
                 <Label text="{i18n>diameter}" />
-                <Input value="{viewModel>Diameter}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
+                <Input value="{viewModel>Diameter}" change=".onDecimalNumberChange" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
                 <Label text="{i18n>height}" />
-                <Input value="{viewModel>Surge_Height}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Input value="{viewModel>Surge_Height}" change=".onDecimalNumberChange" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
             </f:content>
         </f:SimpleForm>
     </VBox>

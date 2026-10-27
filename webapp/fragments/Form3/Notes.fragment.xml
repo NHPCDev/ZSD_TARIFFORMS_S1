@@ -16,7 +16,7 @@
         >
             <f:content>
                 <Label text="{i18n>Remarks}" />
-                <TextArea value="{viewModel>Remarks}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" rows="3" />
+                <TextArea value="{viewModel>Remarks}" change=".onInputChange" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" rows="3" />
             </f:content>
         </f:SimpleForm>
     </VBox>

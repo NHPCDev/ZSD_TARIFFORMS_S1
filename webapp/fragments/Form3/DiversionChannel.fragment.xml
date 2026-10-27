@@ -16,9 +16,9 @@
         >
             <f:content>
                 <Label text="{i18n>size/shape}" required="true"/>
-                <Input value="{viewModel>Size_Shape}" required="true" valueState="{viewModel>/valueState/Size_Shape}" valueStateText="{viewModel>/valueStateText/Size_Shape}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
+                <Input value="{viewModel>Size_Shape}" required="true" change=".onInputChange" valueState="{viewModel>/valueState/Size_Shape}" valueStateText="{viewModel>/valueStateText/Size_Shape}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
                 <Label text="{i18n>length}" required="true" />
-                <Input value="{viewModel>Length}" required="true" valueState="{viewModel>/valueState/Length}" valueStateText="{viewModel>/valueStateText/Length}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
+                <Input value="{viewModel>Length}" required="true" change=".onDecimalNumberChange" valueState="{viewModel>/valueState/Length}" valueStateText="{viewModel>/valueStateText/Length}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
             </f:content>
         </f:SimpleForm>
     </VBox>

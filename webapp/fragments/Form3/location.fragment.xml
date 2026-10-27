@@ -18,7 +18,7 @@
                 <Label text="{i18n>state/dist}" required="true" />
                 <Input value="{viewModel>State_District}" editable="false" required="true" />
                 <Label text="{i18n>river}" required="true" />
-                <Input value="{viewModel>River}" required="true" valueState="{viewModel>/valueState/River}" valueStateText="{viewModel>/valueStateText/River}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
+                <Input value="{viewModel>River}" required="true" change=".onInputChange" valueState="{viewModel>/valueState/River}" valueStateText="{viewModel>/valueStateText/River}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
             </f:content>
         </f:SimpleForm>
     </VBox>

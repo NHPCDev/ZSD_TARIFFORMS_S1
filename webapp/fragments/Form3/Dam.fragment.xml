@@ -16,9 +16,9 @@
         >
             <f:content>
                 <Label text="{i18n>type}" required="true"/>
-                <Input value="{viewModel>Dam_Type}" valueState="{viewModel>/valueState/Dam_Type}" valueStateText="{viewModel>/valueStateText/Dam_Type}" required="true" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
+                <Input value="{viewModel>Dam_Type}" valueState="{viewModel>/valueState/Dam_Type}" valueStateText="{viewModel>/valueStateText/Dam_Type}" required="true" change=".onInputChange" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}" />
                 <Label text="{i18n>maximumDamHeight}" required="true"/>
-                <Input value="{viewModel>Maximum_Dam_Height}" required="true" valueState="{viewModel>/valueState/Maximum_Dam_Height}" valueStateText="{viewModel>/valueStateText/Maximum_Dam_Height}"  editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Input value="{viewModel>Maximum_Dam_Height}" required="true" valueState="{viewModel>/valueState/Maximum_Dam_Height}" valueStateText="{viewModel>/valueStateText/Maximum_Dam_Height}" change=".onDecimalNumberChange"  editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
             </f:content>
         </f:SimpleForm>
     </VBox>

@@ -141,7 +141,7 @@
                                     </uxap:ObjectPageSubSection>
                                 </uxap:subSections>
                             </uxap:ObjectPageSection>
-                            <!-- <uxap:ObjectPageSection
+                            <uxap:ObjectPageSection
                                 title="{i18n>attachments}"
                                 titleUppercase="false"
                             >
@@ -157,7 +157,7 @@
                                         </uxap:blocks>
                                     </uxap:ObjectPageSubSection>
                                 </uxap:subSections>
-                            </uxap:ObjectPageSection> -->
+                            </uxap:ObjectPageSection>
                         </uxap:sections>
                     </uxap:ObjectPageLayout>
                 </content>

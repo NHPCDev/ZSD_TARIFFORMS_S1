@@ -6,7 +6,8 @@ sap.ui.define([
 	"sap/ui/model/FilterOperator",
 	"sap/ui/core/BusyIndicator",
 	"sap/ui/core/Item",
-], (BaseController, messenger, formatter, Filter, FilterOperator, BusyIndicator, Item) => {
+	"sap/ui/core/ValueState",
+], (BaseController, messenger, formatter, Filter, FilterOperator, BusyIndicator, Item, ValueState) => {
 	"use strict";
 
 	return BaseController.extend("com.nhpc.zsdtarifformss1.controller.Form3", {
@@ -22,7 +23,7 @@ sap.ui.define([
 			this.getView().addStyleClass("sapUiSizeCompact");
 		},
 
-		_onRoutePatternMatched: function (oEvent) {
+		_onRoutePatternMatched: async function (oEvent) {
 			const oViewModel = this.getModel("viewModel");
 			const oArgs = oEvent.getParameter("arguments");
 			oViewModel.setProperty("/attachmentList", []);
@@ -32,10 +33,15 @@ sap.ui.define([
 			let sFormID = oArgs.formId;
 			this._TariffID = sTariffID;
 			this._FormID = sFormID;
+			var oHeader = oViewModel.getProperty("/Header");
+			if (!oHeader || Object.keys(oHeader).length === 0) {
+				await this._loadTariffData(sTariffID);
+			}
 			let sTariffPeriod = oViewModel.getProperty("/Header/Tariff_Period");
 			sTariffPeriod = sTariffPeriod.replace("CERC_", "");
 			let sTariffStage = oViewModel.getProperty("/Header/Tariff_Stage");
-			// this.getAttachments();
+			this.resetValueStates();
+			this.getAttachments();
 			if (sStatus === "NEW") {
 				const oForm3Data = {
 					catalog: {
@@ -51,6 +57,89 @@ sap.ui.define([
 				oViewModel.setProperty(
 					"/canEdit",
 					sStatus !== "Submitted"
+				);
+			}
+		},
+		_loadTariffData: async function (sTariffId) {
+			var oModel = this.getModel();
+			var oViewModel = this.getModel("viewModel");
+			BusyIndicator.show();
+			try {
+				return await new Promise(function (resolve, reject) {
+					oModel.read("/HeaderSet", {
+						filters: [
+							new Filter("Tariff_ID", FilterOperator.EQ, sTariffId)
+						],
+						urlParameters: {
+							"$expand": "Head_itemnav"
+						},
+						success: function (oData_1) {
+							if (!oData_1.results.length) {
+								messenger.error("Tariff data not found");
+								reject(new Error("Tariff data not found"));
+								return;
+							}
+							var oHeader = oData_1.results[0];
+							oViewModel.setProperty("/Header", oHeader);
+							resolve(oHeader);
+						},
+						error: function (oError_1) {
+							messenger.error("Unable to load tariff data");
+							reject(oError_1);
+						}
+					});
+				});
+			} finally {
+				BusyIndicator.hide();
+			}
+		},
+
+		resetValueStates: function () {
+			let oViewModel = this.getModel("viewModel");
+			oViewModel.setProperty("/valueState", {});
+			oViewModel.setProperty("/valueStateText", {});
+		},
+
+		onDecimalNumberChange: function (oEvent) {
+			var oSrc = oEvent.getSource(),
+				sValue = oEvent.getParameter("value");
+			if (sValue) {
+				oSrc.setValueState(ValueState.None);
+				oSrc.setValueStateText(null);
+			}
+			var oControl = oEvent.getSource();
+			var sValue = oEvent.getParameter("value") || "";
+			oControl.setValueState("None");
+			oControl.setValueStateText("");
+			sValue = sValue.replace(/[^0-9.]/g, "");
+			if (sValue.startsWith(".")) {
+				sValue = "";
+			}
+			var iDotIndex = sValue.indexOf(".");
+			if (iDotIndex !== -1) {
+				var sIntegerPart = sValue.substring(0, iDotIndex);
+				var sDecimalPart = sValue.substring(iDotIndex + 1);
+				sDecimalPart = sDecimalPart.replace(/\./g, "");
+				sDecimalPart = sDecimalPart.substring(0, 2);
+				sValue = sIntegerPart + "." + sDecimalPart;
+			}
+			if (sValue.includes(".")) {
+				var aParts = sValue.split(".");
+				aParts[0] = aParts[0].replace(/^0+(?=\d)/, "");
+				sValue = aParts[0] + "." + aParts[1];
+			} else {
+				sValue = sValue.replace(/^0+(?=\d)/, "");
+			}
+			oControl.setValue(sValue);
+			var sBindingPath = oControl.getBindingPath("value");
+			if (!sBindingPath) {
+				return;
+			}
+			var oContext = oControl.getBindingContext("viewModel");
+			if (oContext) {
+				oContext.getModel().setProperty(
+					oContext.getPath() + "/" + sBindingPath,
+					sValue
 				);
 			}
 		},
@@ -265,11 +354,12 @@ sap.ui.define([
 			let oResourceBundle = this.getResourceBundle();
 			let aPayload = this.getPayload("Draft");
 			let sTitle = oResourceBundle.getText("CONFIRM_TITLE");
-			let sText = oResourceBundle.getText("CONFIRM_TEXT_DRAFT_REQUEST_3",sTariffPeriod);
+			let sText = oResourceBundle.getText("CONFIRM_TEXT_DRAFT_REQUEST_3", sTariffPeriod);
 			messenger.confirm(sTitle, sText, "Confirm", null, function () {
 				BusyIndicator.show(0);
 				oModel.create("/Form3_HeaderSet", aPayload, {
 					success: function (oData) {
+						this.fileUploadwithTable();
 						messenger.success(oResourceBundle.getText("form3DraftSuccess", [sTariffPeriod]), () => {
 							this.getRouter().navTo("RouteDetail", {
 								tariffId: sTariffID
@@ -298,11 +388,12 @@ sap.ui.define([
 			}
 			let aPayload = this.getPayload("Submitted");
 			let sTitle = oResourceBundle.getText("CONFIRM_TITLE");
-			let sText = oResourceBundle.getText("CONFIRM_TEXT_FINAL_REQUEST_3",sTariffPeriod);
+			let sText = oResourceBundle.getText("CONFIRM_TEXT_FINAL_REQUEST_3", sTariffPeriod);
 			messenger.confirm(sTitle, sText, "Confirm", null, function () {
 				BusyIndicator.show(0);
 				oModel.create("/Form3_HeaderSet", aPayload, {
 					success: function (oData) {
+						this.fileUploadwithTable();
 						messenger.success(oResourceBundle.getText("form3SubmitSuccess", [sTariffPeriod]), () => {
 							this.getRouter().navTo("RouteDetail", {
 								tariffId: sTariffID
@@ -330,122 +421,122 @@ sap.ui.define([
 			let oResourceBundle = this.getResourceBundle();
 			let bValid = true;
 			let oFormDetails = oViewModel.getProperty("/formDetails");
-			if(!oFormDetails.River){
+			if (!oFormDetails.River) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/River","Error");
-				oViewModel.setProperty("/valueStateText/River",oResourceBundle.getText("riverErrorMsg"));
+				oViewModel.setProperty("/valueState/River", "Error");
+				oViewModel.setProperty("/valueStateText/River", oResourceBundle.getText("riverErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/River","None");
-				oViewModel.setProperty("/valueStateText/River","");
+				oViewModel.setProperty("/valueState/River", "None");
+				oViewModel.setProperty("/valueStateText/River", "");
 			}
-			if(!oFormDetails.Size_Shape){
+			if (!oFormDetails.Size_Shape) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/Size_Shape","Error");
-				oViewModel.setProperty("/valueStateText/Size_Shape",oResourceBundle.getText("sizeShapeErrorMsg"));
+				oViewModel.setProperty("/valueState/Size_Shape", "Error");
+				oViewModel.setProperty("/valueStateText/Size_Shape", oResourceBundle.getText("sizeShapeErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/Size_Shape","None");
-				oViewModel.setProperty("/valueStateText/Size_Shape","");
+				oViewModel.setProperty("/valueState/Size_Shape", "None");
+				oViewModel.setProperty("/valueStateText/Size_Shape", "");
 			}
-			if(!oFormDetails.Length){
+			if (!oFormDetails.Length) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/Length","Error");
-				oViewModel.setProperty("/valueStateText/Length",oResourceBundle.getText("lengthErrorMsg"));
+				oViewModel.setProperty("/valueState/Length", "Error");
+				oViewModel.setProperty("/valueStateText/Length", oResourceBundle.getText("lengthErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/Length","None");
-				oViewModel.setProperty("/valueStateText/Length","");
+				oViewModel.setProperty("/valueState/Length", "None");
+				oViewModel.setProperty("/valueStateText/Length", "");
 			}
-			if(!oFormDetails.Dam_Type){
+			if (!oFormDetails.Dam_Type) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/Dam_Type","Error");
-				oViewModel.setProperty("/valueStateText/Dam_Type",oResourceBundle.getText("damTypeErrorMsg"));
+				oViewModel.setProperty("/valueState/Dam_Type", "Error");
+				oViewModel.setProperty("/valueStateText/Dam_Type", oResourceBundle.getText("damTypeErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/Dam_Type","None");
-				oViewModel.setProperty("/valueStateText/Dam_Type","");
+				oViewModel.setProperty("/valueState/Dam_Type", "None");
+				oViewModel.setProperty("/valueStateText/Dam_Type", "");
 			}
-			if(!oFormDetails.Maximum_Dam_Height){
+			if (!oFormDetails.Maximum_Dam_Height) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/Maximum_Dam_Height","Error");
-				oViewModel.setProperty("/valueStateText/Maximum_Dam_Height",oResourceBundle.getText("maximumDamHeightErrorMsg"));
+				oViewModel.setProperty("/valueState/Maximum_Dam_Height", "Error");
+				oViewModel.setProperty("/valueStateText/Maximum_Dam_Height", oResourceBundle.getText("maximumDamHeightErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/Maximum_Dam_Height","None");
-				oViewModel.setProperty("/valueStateText/Maximum_Dam_Height","");
+				oViewModel.setProperty("/valueState/Maximum_Dam_Height", "None");
+				oViewModel.setProperty("/valueStateText/Maximum_Dam_Height", "");
 			}
-			if(!oFormDetails.Turbine_Type){
+			if (!oFormDetails.Turbine_Type) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/Turbine_Type","Error");
-				oViewModel.setProperty("/valueStateText/Turbine_Type",oResourceBundle.getText("turbineTypeErrorMsg"));
+				oViewModel.setProperty("/valueState/Turbine_Type", "Error");
+				oViewModel.setProperty("/valueStateText/Turbine_Type", oResourceBundle.getText("turbineTypeErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/Turbine_Type","None");
-				oViewModel.setProperty("/valueStateText/Turbine_Type","");
+				oViewModel.setProperty("/valueState/Turbine_Type", "None");
+				oViewModel.setProperty("/valueStateText/Turbine_Type", "");
 			}
-			if(!oFormDetails.Rated_Head){
+			if (!oFormDetails.Rated_Head) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/Rated_Head","Error");
-				oViewModel.setProperty("/valueStateText/Rated_Head",oResourceBundle.getText("ratedHeadErrorMsg"));
+				oViewModel.setProperty("/valueState/Rated_Head", "Error");
+				oViewModel.setProperty("/valueStateText/Rated_Head", oResourceBundle.getText("ratedHeadErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/Rated_Head","None");
-				oViewModel.setProperty("/valueStateText/Rated_Head","");
+				oViewModel.setProperty("/valueState/Rated_Head", "None");
+				oViewModel.setProperty("/valueStateText/Rated_Head", "");
 			}
-			if(!oFormDetails.Tail_Race_DiameterShape){
+			if (!oFormDetails.Tail_Race_DiameterShape) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/Tail_Race_DiameterShape","Error");
-				oViewModel.setProperty("/valueStateText/Tail_Race_DiameterShape",oResourceBundle.getText("tailRaceDiameterShapeErrorMsg"));
+				oViewModel.setProperty("/valueState/Tail_Race_DiameterShape", "Error");
+				oViewModel.setProperty("/valueStateText/Tail_Race_DiameterShape", oResourceBundle.getText("tailRaceDiameterShapeErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/Tail_Race_DiameterShape","None");
-				oViewModel.setProperty("/valueStateText/Tail_Race_DiameterShape","");
+				oViewModel.setProperty("/valueState/Tail_Race_DiameterShape", "None");
+				oViewModel.setProperty("/valueStateText/Tail_Race_DiameterShape", "");
 			}
-			if(!oFormDetails.Tail_Race_Length){
+			if (!oFormDetails.Tail_Race_Length) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/Tail_Race_Length","Error");
-				oViewModel.setProperty("/valueStateText/Tail_Race_Length",oResourceBundle.getText("tailRaceLengthErrorMsg"));
+				oViewModel.setProperty("/valueState/Tail_Race_Length", "Error");
+				oViewModel.setProperty("/valueStateText/Tail_Race_Length", oResourceBundle.getText("tailRaceLengthErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/Tail_Race_Length","None");
-				oViewModel.setProperty("/valueStateText/Tail_Race_Length","");
+				oViewModel.setProperty("/valueState/Tail_Race_Length", "None");
+				oViewModel.setProperty("/valueStateText/Tail_Race_Length", "");
 			}
-			if(!oFormDetails.Minimum_tail_waterlevel){
+			if (!oFormDetails.Minimum_tail_waterlevel) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/Minimum_tail_waterlevel","Error");
-				oViewModel.setProperty("/valueStateText/Minimum_tail_waterlevel",oResourceBundle.getText("minimumTailWaterLevelErrorMsg"));
+				oViewModel.setProperty("/valueState/Minimum_tail_waterlevel", "Error");
+				oViewModel.setProperty("/valueStateText/Minimum_tail_waterlevel", oResourceBundle.getText("minimumTailWaterLevelErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/Minimum_tail_waterlevel","None");
-				oViewModel.setProperty("/valueStateText/Minimum_tail_waterlevel","");
+				oViewModel.setProperty("/valueState/Minimum_tail_waterlevel", "None");
+				oViewModel.setProperty("/valueStateText/Minimum_tail_waterlevel", "");
 			}
 
-			if(!oFormDetails.Switchyard_Type){
+			if (!oFormDetails.Switchyard_Type) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/Switchyard_Type","Error");
-				oViewModel.setProperty("/valueStateText/Switchyard_Type",oResourceBundle.getText("switchyardTypeErrorMsg"));
+				oViewModel.setProperty("/valueState/Switchyard_Type", "Error");
+				oViewModel.setProperty("/valueStateText/Switchyard_Type", oResourceBundle.getText("switchyardTypeErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/Switchyard_Type","None");
-				oViewModel.setProperty("/valueStateText/Switchyard_Type","");
+				oViewModel.setProperty("/valueState/Switchyard_Type", "None");
+				oViewModel.setProperty("/valueStateText/Switchyard_Type", "");
 			}
-			if(!oFormDetails.Line_Bays){
+			if (!oFormDetails.Line_Bays) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/Line_Bays","Error");
-				oViewModel.setProperty("/valueStateText/Line_Bays",oResourceBundle.getText("lineBaysErrorMsg"));
+				oViewModel.setProperty("/valueState/Line_Bays", "Error");
+				oViewModel.setProperty("/valueStateText/Line_Bays", oResourceBundle.getText("lineBaysErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/Line_Bays","None");
-				oViewModel.setProperty("/valueStateText/Line_Bays","");
+				oViewModel.setProperty("/valueState/Line_Bays", "None");
+				oViewModel.setProperty("/valueStateText/Line_Bays", "");
 			}
-			if(!oFormDetails.Turbine_Generator){
+			if (!oFormDetails.Turbine_Generator) {
 				bValid = false;
-				oViewModel.setProperty("/valueState/Turbine_Generator","Error");
-				oViewModel.setProperty("/valueStateText/Turbine_Generator",oResourceBundle.getText("turbineGeneratorErrorMsg"));
+				oViewModel.setProperty("/valueState/Turbine_Generator", "Error");
+				oViewModel.setProperty("/valueStateText/Turbine_Generator", oResourceBundle.getText("turbineGeneratorErrorMsg"));
 			} else {
-				oViewModel.setProperty("/valueState/Turbine_Generator","None");
-				oViewModel.setProperty("/valueStateText/Turbine_Generator","");
+				oViewModel.setProperty("/valueState/Turbine_Generator", "None");
+				oViewModel.setProperty("/valueStateText/Turbine_Generator", "");
 			}
 			return bValid;
 		},
 
 		// added for attachment handling
 		fileUploadwithTable: function () {
-
+			let oViewModel = this.getModel("viewModel");
+			let sTariffPeriod = oViewModel.getProperty("/Header/Tariff_Period");
+			sTariffPeriod = sTariffPeriod.replace("CERC_", "");
 			var oModel = this.getModel(),
 				aAttachments = this.oItemsProcessor,
 				sUrl = oModel.sServiceUrl;
-
-			console.log("Attachments URL", sUrl);
 
 			if (aAttachments && aAttachments.length > 0) {
 				this.iNoOfAttachments = aAttachments.length;
@@ -462,7 +553,7 @@ sap.ui.define([
 							key: "slug",
 							text: this._TariffID + "/" +
 								this._FormID + "/" +
-								this._FiscalYear + "/" +
+								sTariffPeriod + "/" +
 								oAttachment.getFileName()
 						})
 					);
@@ -484,7 +575,6 @@ sap.ui.define([
 		},
 
 		onPluginActivated: function (oEvent) {
-			console.log("FORM 5 onPluginActivated CALLED");
 
 			this.oItemsProcessor = [];
 			this.iNoOfAttachments = 0;
@@ -500,7 +590,6 @@ sap.ui.define([
 			oUploadBtn.setStyle("Emphasized");
 			oUploadBtn.setIconFirst(true);
 		},
-
 		itemValidationCallback: function (oItemInfo) {
 
 			var oItemDetails = oItemInfo.oItem,
@@ -659,14 +748,15 @@ sap.ui.define([
 				}
 			}
 		},
-
 		getAttachments: function () {
 			var oViewModel = this.getModel("viewModel"),
 				oModel = this.getModel();
+			let sTariffPeriod = oViewModel.getProperty("/Header/Tariff_Period");
+			sTariffPeriod = sTariffPeriod.replace("CERC_", "");
 
 			var aFilters = [
 				new Filter("reqno", FilterOperator.EQ, this._TariffID),
-				new Filter("dateh", FilterOperator.EQ, this._FiscalYear),
+				new Filter("dateh", FilterOperator.EQ, sTariffPeriod),
 				new Filter("Formid", FilterOperator.EQ, this._FormID)
 			];
 
@@ -674,9 +764,6 @@ sap.ui.define([
 				filters: aFilters,
 
 				success: function (oResp) {
-
-					console.log("Form 5 Attachments:", oResp.results);
-
 					var aAttachments = oResp.results || [];
 
 					aAttachments.forEach(function (oAttachment) {
@@ -742,6 +829,8 @@ sap.ui.define([
 			var oSource = oEvent.getSource();
 			const oContext = oSource.getBindingContext("viewModel");
 
+			var objectAtt = oContext.getObject();
+
 			var oResourceBundle = this.getResourceBundle(),
 				oViewModel = this.getModel("viewModel"),
 				sPath = oContext.getPath(),
@@ -749,19 +838,20 @@ sap.ui.define([
 				sFileName = oViewModel.getProperty(sPath + "/Filename"),
 				sTitle = oResourceBundle.getText("CONFIRM_TITLE");
 
-			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg", sFileName);
+			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg", [objectAtt.Filename]);
 
 			messenger.confirm(sTitle, sMessage, "Confirm", null, function () {
 				this.deleteAttachment(objectAtt);
 			}.bind(this));
 		},
 		deleteAttachment: function (objectAtt) {
+			console.log("Deleting attachment:", objectAtt);
 
 			var oResourceBundle = this.getResourceBundle(),
 				oModel = this.getModel();
 
 			var sUrl = oModel.createKey("/AttachmentSet", {
-				Formid: objectAtt.Formid,
+				Formid: this._FormID,
 				dateh: objectAtt.dateh,
 				location: objectAtt.location,
 				flagyn: objectAtt.flagyn,
@@ -798,7 +888,6 @@ sap.ui.define([
 				}.bind(this)
 			});
 		},
-
 		onRemoveAttachment: function (oEvent) {
 
 			var oSource = oEvent.getSource();
@@ -814,7 +903,7 @@ sap.ui.define([
 				sFileName = oViewModel.getProperty(sPath + "/Filename"),
 				sTitle = oResourceBundle.getText("CONFIRM_TITLE");
 
-			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg", sFileName);
+			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg", [sFileName]);
 
 			messenger.confirm(sTitle, sMessage, "Confirm", null, function () {
 
@@ -831,311 +920,6 @@ sap.ui.define([
 				}
 
 			}.bind(this));
-		},
-		onDownloadTemplate: function () {
-			var oViewModel = this.getModel("viewModel");
-			var aData = oViewModel.getProperty("/catalog/Form3") || [];
-			var aExcelData = [];
-
-			var fnAddRows = function (aItems) {
-				aItems.forEach(function (oItem) {
-					if (oItem.IsTotal === "X") {
-						return;
-					}
-					aExcelData.push({
-						NodeType: "H",
-						Text: oItem.Text || "",
-						Equipment: oItem.Equipment || "",
-						Head_Account: oItem.Head_Account || "",
-						Accural_Basis: oItem.Accural_Basis || "",
-						Discharge_Liabilty: oItem.Discharge_Liabilty || "",
-						Cash_Basis: oItem.Cash_Basis || "",
-						Idc: oItem.Idc || "",
-						Regulation: oItem.Regulation || "",
-						Justification: oItem.Justification || "",
-						Admitted_Cost: oItem.Admitted_Cost || ""
-					});
-
-					if (oItem.Form3head_item && oItem.Form3head_item.length) {
-						// oItem.Form3head_item.forEach(function (oChild) {
-						// 	aExcelData.push({
-						// 		NodeType: "I",
-						// 		Text: oChild.Text || "",
-						// 		Equipment: oChild.Equipment || "",
-						// 		Head_Account: oChild.Head_Account || "",
-						// 		Accural_Basis: oChild.Accural_Basis || "",
-						// 		Discharge_Liabilty: oChild.Discharge_Liabilty || "",
-						// 		Cash_Basis: oChild.Cash_Basis || "",
-						// 		Idc: oChild.Idc || "",
-						// 		Regulation: oChild.Regulation || "",
-						// 		Justification: oChild.Justification || "",
-						// 		Admitted_Cost: oChild.Admitted_Cost || ""
-						// 	});
-						// });
-					}
-				});
-			};
-
-			fnAddRows(aData);
-
-			var aCols = [
-				{
-					label: "Node Type",
-					property: "NodeType",
-					type: "string"
-				},
-				{
-					label: this.getResourceBundle().getText("title1"),
-					property: "Text",
-					type: "string"
-				},
-				{
-					label: this.getResourceBundle().getText("headOfWork"),
-					property: "Equipment",
-					type: "string"
-				},
-				{
-					label: this.getResourceBundle().getText("headOfAccount"),
-					property: "Head_Account",
-					type: "string"
-				},
-				{
-					label: this.getResourceBundle().getText("accuralBasis"),
-					property: "Accural_Basis",
-					type: "string"
-				},
-				// {
-				// 	label: this.getResourceBundle().getText("unDischargedLiability"),
-				// 	property: "Discharge_Liabilty",
-				// 	type: "string"
-				// },
-				// {
-				// 	label: this.getResourceBundle().getText("cashBasis"),
-				// 	property: "Cash_Basis",
-				// 	type: "string"
-				// },
-				// {
-				// 	label: this.getResourceBundle().getText("IDCIncluded"),
-				// 	property: "Idc",
-				// 	type: "string"
-				// },
-				{
-					label: this.getResourceBundle().getText("regulationUnderWhichClaimed"),
-					property: "Regulation",
-					type: "string"
-				},
-				{
-					label: this.getResourceBundle().getText("justification"),
-					property: "Justification",
-					type: "string"
-				},
-				// {
-				// 	label: this.getResourceBundle().getText("admittedCostbyTheCommissionIfAny"),
-				// 	property: "Admitted_Cost",
-				// 	type: "string"
-				// }
-			];
-
-			var oSettings = {
-				workbook: {
-					columns: aCols
-				},
-				dataSource: aExcelData,
-				fileName: "Form3.xlsx"
-			};
-
-			var oSpreadsheet = new sap.ui.export.Spreadsheet(oSettings);
-
-			oSpreadsheet.build().finally(function () {
-				oSpreadsheet.destroy();
-			});
-		},
-		onFileChange: function (oEvent) {
-			var oFile = oEvent.getParameter("files") && oEvent.getParameter("files")[0];
-			if (!oFile || !window.FileReader) {
-				return;
-			}
-			var that = this;
-			var oResourceBundle = this.getResourceBundle();
-			var oReader = new FileReader();
-			let oViewModel = this.getModel("viewModel");
-			let oData = oViewModel.getProperty("/catalog/Form3");
-			let sTotalData = oData.find(i => i.IsTotal === "X");
-			let aExistingSections = oData.filter(function (i) {
-				return i.IsTotal !== "X";
-			});
-			var oHeaderMap = {
-				Text: oResourceBundle.getText("title1"),
-				Equipment: oResourceBundle.getText("headOfWork"),
-				Head_Account: oResourceBundle.getText("headOfAccount"),
-				Accural_Basis: oResourceBundle.getText("accuralBasis"),
-				Discharge_Liabilty: oResourceBundle.getText("unDischargedLiability"),
-				Cash_Basis: oResourceBundle.getText("cashBasis"),
-				Idc: oResourceBundle.getText("IDCIncluded"),
-				Regulation: oResourceBundle.getText("regulationUnderWhichClaimed"),
-				Justification: oResourceBundle.getText("justification"),
-				Admitted_Cost: oResourceBundle.getText("admittedCostbyTheCommissionIfAny")
-			};
-			var fnGetValue = function (oRow, sProperty) {
-				var sExcelHeader = oHeaderMap[sProperty];
-				var vValue;
-				if (Object.prototype.hasOwnProperty.call(oRow, sExcelHeader)) {
-					vValue = oRow[sExcelHeader];
-				} else {
-					vValue = oRow[sProperty];
-				}
-				return vValue === null || vValue === undefined ? "" : String(vValue);
-			};
-			var fnIsEmpty = function (vValue) {
-				return vValue === null || vValue === undefined || String(vValue).trim() === "";
-			};
-			var fnGetFieldLabel = function (sField) {
-				return oHeaderMap[sField] || sField;
-			};
-			oReader.onload = function (oEvent) {
-				try {
-					var sData = oEvent.target.result;
-					var oWorkbook = XLSX.read(sData, {
-						type: "binary"
-					});
-					var aExcelData = [];
-					oWorkbook.SheetNames.forEach(function (sSheetName) {
-						var oWorksheet = oWorkbook.Sheets[sSheetName];
-						var aSheetData = XLSX.utils.sheet_to_row_object_array(oWorksheet, {
-							defval: ""
-						});
-						aExcelData = aExcelData.concat(aSheetData);
-					});
-					if (!aExcelData.length) {
-						messenger.warning(oResourceBundle.getText("noDataInExcel"));
-						return;
-					}
-					var aForm3 = [];
-					var oCurrentParent = null;
-					var aErrors = [];
-					var iSubSno = 1;
-					aExcelData.forEach(function (oRow, iIndex) {
-						var iExcelRow = iIndex + 2;
-						var sNodeType = String(oRow["Node Type"] || oRow["NodeType"] || "").trim().toUpperCase();
-						if (sNodeType !== "H" && sNodeType !== "I") {
-							aErrors.push("Excel Row " + iExcelRow + ": Invalid Node Type");
-							return;
-						}
-						var oItem = {
-							Text: fnGetValue(oRow, "Text"),
-							Equipment: fnGetValue(oRow, "Equipment"),
-							Head_Account: fnGetValue(oRow, "Head_Account"),
-							Accural_Basis: fnGetValue(oRow, "Accural_Basis"),
-							Discharge_Liabilty: "0.00",
-							Cash_Basis: "",
-							Idc: "",
-							Regulation: fnGetValue(oRow, "Regulation"),
-							Justification: fnGetValue(oRow, "Justification"),
-							Admitted_Cost: ""
-						};
-						if (sNodeType === "H") {
-							if (fnIsEmpty(oItem.Text)) {
-								aErrors.push("Excel Row " + iExcelRow + ": Title is mandatory for Header (H) node.");
-							}
-							oItem.Form3head_item = [];
-							var oExistingSection = aExistingSections[aForm3.length];
-							if (oExistingSection) {
-								oItem.Sno = oExistingSection.Sno;
-							}
-							aForm3.push(oItem);
-							oCurrentParent = oItem;
-							iSubSno = 1;
-						} else if (sNodeType === "I") {
-							if (!oCurrentParent) {
-								aErrors.push("Excel Row " + iExcelRow + ": Child (I) node found before a Header (H) node.");
-								return;
-							}
-							var aMandatoryFields = [
-								"Equipment",
-								"Head_Account",
-								"Accural_Basis",
-								"Regulation",
-								"Justification"
-							];
-							aMandatoryFields.forEach(function (sField) {
-								if (fnIsEmpty(oItem[sField])) {
-									aErrors.push("Excel Row " + iExcelRow + ": " + fnGetFieldLabel(sField) + " is mandatory.");
-								}
-							});
-							oItem.SubSno = String(iSubSno).padStart(4, "0");
-							iSubSno++;
-							oCurrentParent.Form3head_item.push(oItem);
-						}
-					});
-					if (aErrors.length > 0) {
-						messenger.error("Please correct the following errors:\n\n" + aErrors.join("\n"), {
-							title: "Excel Validation Errors"
-						});
-						return;
-					}
-					aForm3.forEach(function (oParent) {
-						oParent.Form3head_item.push({
-							"Equipment": "SUB_TOTAL",
-							"IsSubTotal": "X",
-							"SubSno": String(oParent.Form3head_item.length + 1).padStart(4, "0")
-						});
-					});
-					aForm3.push(JSON.parse(JSON.stringify(sTotalData)));
-					that.getModel("viewModel").setProperty("/catalog/Form3", aForm3);
-					that._calculateForm3Totals();
-					that.getModel("viewModel").refresh(true);
-					messenger.success(oResourceBundle.getText("excelUploadSuccess"));
-				} catch (oError) {
-					messenger.error(oResourceBundle.getText("excelUploadError"));
-				}
-			};
-			oReader.onerror = function () {
-				messenger.error(oResourceBundle.getText("excelUploadError"));
-			};
-			oReader.readAsBinaryString(oFile);
-		},
-		calculateForm3Total: function (oEvent) {
-			const oViewModel = this.getModel("viewModel");
-			const aForm3 = oViewModel.getProperty("/catalog/Form3") || [];
-			const oInput = oEvent.getSource();
-			const sValue = String(oInput.getValue()).trim();
-			const oResourceBundle = this.getResourceBundle();
-
-			// Allow whole numbers or decimals with up to 2 decimal places
-			const oRegex = /^\d+(\.\d{1,2})?$/;
-
-			if (sValue !== "" && !oRegex.test(sValue)) {
-				oInput.setValueState("Error");
-				oInput.setValueStateText(oResourceBundle.getText("decimalError"));
-				oInput.setValue("");
-				return;
-			}
-
-			oInput.setValueState("None");
-			oInput.setValueStateText("");
-
-			let nTotal = 0;
-
-			aForm3.forEach(function (oParent) {
-				const nValue = String(oParent.Value ?? "").trim();
-
-				if (nValue !== "" && oRegex.test(nValue)) {
-					nTotal += Number(nValue);
-				}
-			});
-
-			oViewModel.setProperty("/Form3Total", nTotal.toFixed(2));
-		},
-		removeValueState: function (oEvent) {
-			const oInput = oEvent.getSource();
-			const oContext = oInput.getBindingContext("viewModel");
-			if (!oContext) {
-				return;
-			}
-			const oViewModel = this.getModel("viewModel");
-			const sPath = oContext.getPath();
-			oViewModel.setProperty(sPath + "/_ValueState", "None");
-			oViewModel.setProperty(sPath + "/_ValueStateText", "");
 		},
 	});
 });                                                                                                                                                   

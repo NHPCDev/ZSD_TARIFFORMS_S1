@@ -18,9 +18,9 @@
                 <Label text="{i18n>installedCapacity}" required="true" />
                 <Input value="{viewModel>Installed_Capacity}" editable="false" required="true" />
                 <Label text="{i18n>typeOfTurbine}" required="true" />
-                <Input value="{viewModel>Turbine_Type}" required="true" valueState="{viewModel>/valueState/Turbine_Type}" valueStateText="{viewModel>/valueStateText/Turbine_Type}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Input value="{viewModel>Turbine_Type}" required="true" change=".onInputChange" valueState="{viewModel>/valueState/Turbine_Type}" valueStateText="{viewModel>/valueStateText/Turbine_Type}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
                 <Label text="{i18n>ratedHead}" required="true" />
-                <Input value="{viewModel>Rated_Head}" required="true" valueState="{viewModel>/valueState/Rated_Head}" valueStateText="{viewModel>/valueStateText/Rated_Head}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
+                <Input value="{viewModel>Rated_Head}" required="true" change=".onDecimalNumberChange" valueState="{viewModel>/valueState/Rated_Head}" valueStateText="{viewModel>/valueStateText/Rated_Head}" editable="{= ${viewModel>/Status} === 'NEW' || ${viewModel>/Status} === 'Draft'}"/>
                 <Label text="{i18n>ratedDischarge}" required="true" />
                 <Input value="{viewModel>Rated_Discharge}" editable="false" required="true"/>
                 <Label text="{i18n>headAtFullReservoirLevel}" required="true"/>

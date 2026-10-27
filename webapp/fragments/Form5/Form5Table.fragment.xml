@@ -107,19 +107,19 @@
     >
         <m:Text
             text=""
-            width="400px"
+            width="800px"
         />
 
         <m:Text
             text="{i18n>total}"
-            width="400px"
+            width="200px"
             textAlign="Center"
             class="statusBoldText"
         />
 
         <m:Input
             value="{viewModel>/Form5Total}"
-            width="1000px"
+            width="400px"
             editable="false"
             textAlign="End"
         />
