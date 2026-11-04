@@ -132,13 +132,13 @@
                                 icon="sap-icon://delete"
                                 type="Transparent"
                                 press="onRemoveAttachment"
-                                visible="{= !${viewModel>Url} &amp;&amp; ${viewModel>/formDetails/Status} !== 'Submitted' }"
+                                visible="{= !${viewModel>Url} &amp;&amp; ${viewModel>/Status} !== 'Submitted' }"
                             />
                             <Button
                                 icon="sap-icon://delete"
                                 type="Transparent"
                                 press="onDeleteAttachment"
-                                visible="{= !!${viewModel>Url} &amp;&amp; ${viewModel>/formDetails/Status} !== 'Submitted' }"
+                                visible="{= !!${viewModel>Url} &amp;&amp; ${viewModel>/Status} !== 'Submitted' }"
                             />
                         </HBox>
                     </cells>
