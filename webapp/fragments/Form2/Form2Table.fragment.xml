@@ -1,0 +1,231 @@
+<core:FragmentDefinition
+    xmlns="sap.ui.table"
+    xmlns:core="sap.ui.core"
+    xmlns:m="sap.m"
+    xmlns:rowmodes="sap.ui.table.rowmodes"
+>
+    <m:VBox id="idvbf2main">
+        
+        <TreeTable
+            id="idForm2Table"
+            rows="{
+            path: 'viewModel>/Form2/Items',
+            parameters: {
+                arrayNames: ['Form2item_subitem']
+            }
+        }"
+            selectionMode="None"
+            enableSelectAll="false"
+            fixedColumnCount="3"
+            alternateRowColors="true"
+            class="sapUiSizeCompact"
+            width="100%"
+        >
+            <rowMode>
+                <rowmodes:Fixed
+                    id="idRowmodeTable"
+                    rowContentHeight="50"
+                    rowCount="8"
+                />
+            </rowMode>
+
+            <columns>
+                <!-- Serial Number -->
+                <Column
+                    id="idCol1"
+                    width="80px"
+                    hAlign="Center"
+                >
+                    <m:Label
+                        id="idColLbl01"
+                        text="{i18n>slNo}"
+                        wrapping="true"
+                    />
+                    <template>
+                        <m:Text
+                            id="idCellVal01"
+                            text="{= ${viewModel>Sno} || ${viewModel>Sub_Sno} }"
+                        />
+                    </template>
+                </Column>
+
+                <!-- Description -->
+                <Column
+                    id="idCol2"
+                    hAlign="Begin"
+                    width="300px"
+                >
+                    <m:Label
+                        id="idColLbl02"
+                        text="{i18n>Description}"
+                        wrapping="true"
+                    />
+                    <template>
+                        <m:Text
+                            id="idCellVal02"
+                            text="{viewModel>Text}"
+                            wrapping="true"
+                            class="statusBoldText"
+                        />
+                    </template>
+                </Column>
+
+                <!-- Units -->
+                <Column
+                    id="idCol3"
+                    hAlign="Center"
+                >
+                    <m:Label
+                        id="idColLbl03"
+                        text="{i18n>Units}"
+                        wrapping="true"
+                    />
+                    <template>
+                        <m:Text
+                            id="idCellVal03"
+                            text="{viewModel>Units}"
+                        />
+                    </template>
+                </Column>
+
+                <!-- Existing -->
+                <Column
+                    id="idCol4"
+                    hAlign="Center"
+                >
+                    <m:Label
+                        id="idColLbl04"
+                        text="{viewModel>/Form2ColumnHeaders/Existing_FY}"
+                        wrapping="true"
+                    />
+                    <template>
+                        <m:Input
+                            id="idCellVal04"
+                            value="{viewModel>Existing_FY}"
+                            editable="{viewModel>/canEdit}"
+                            width="100%"
+                        />
+                    </template>
+                </Column>
+
+                <!-- 2019-20 -->
+                <Column
+                    id="idCol5"
+                    hAlign="Center"
+                >
+                    <m:Label
+                        id="idColLbl05"
+                        text="{viewModel>/Form2ColumnHeaders/Fisical_year1}"
+                        wrapping="true"
+                    />
+                    <template>
+                        <m:Input
+                            id="idCellVal05"
+                            value="{viewModel>Fisical_year1}"
+                            editable="{viewModel>/canEdit}"
+                            width="100%"
+                        />
+                    </template>
+                </Column>
+
+                <!-- 2020-21 -->
+                <Column
+                    id="idCol6"
+                    hAlign="Center"
+                >
+                    <m:Label
+                        id="idColLbl06"
+                        text="{viewModel>/Form2ColumnHeaders/Fisical_year2}"
+                        wrapping="true"
+                    />
+                    <template>
+                        <m:Input
+                            id="idCellVal06"
+                            value="{viewModel>Fisical_year2}"
+                            editable="{viewModel>/canEdit}"
+                            width="100%"
+                        />
+                    </template>
+                </Column>
+
+                <!-- 2021-22 -->
+                <Column
+                    id="idCol7"
+                    hAlign="Center"
+                >
+                    <m:Label
+                        id="idColLbl07"
+                        text="{viewModel>/Form2ColumnHeaders/Fisical_year3}"
+                        wrapping="true"
+                    />
+                    <template>
+                        <m:Input
+                            id="idCellVal07"
+                            value="{viewModel>Fisical_year3}"
+                            editable="{viewModel>/canEdit}"
+                            width="100%"
+                        />
+                    </template>
+                </Column>
+
+                <!-- 2022-23 -->
+                <Column
+                    id="idCol8"
+                    hAlign="Center"
+                >
+                    <m:Label
+                        id="idColLbl08"
+                        text="{viewModel>/Form2ColumnHeaders/Fisical_year4}"
+                        wrapping="true"
+                    />
+                    <template>
+                        <m:Input
+                            id="idCellVal08"
+                            value="{viewModel>Fisical_year4}"
+                            editable="{viewModel>/canEdit}"
+                            width="100%"
+                        />
+                    </template>
+                </Column>
+
+                <!-- 2023-24 -->
+                <Column
+                    id="idCol9"
+                    hAlign="Center"
+                >
+                    <m:Label
+                        id="idColLbl09"
+                        text="{viewModel>/Form2ColumnHeaders/Fisical_year5}"
+                        wrapping="true"
+                    />
+                    <template>
+                        <m:Input
+                            id="idCellVal09"
+                            value="{viewModel>Fisical_year5}"
+                            editable="{viewModel>/canEdit}"
+                            width="100%"
+                        />
+                    </template>
+                </Column>
+            </columns>
+        </TreeTable>
+        <m:VBox
+            id="idtextVBF2"
+            class="sapUiMediumMarginTop sapUiSmallMarginBeginEnd"
+            
+        >
+            <m:Label
+                id="idTitleF2"
+                text="{i18n>Note}"
+                design="Bold"
+                class="sapUiLargeFontSize form2NoteTitle"
+            />
+            <m:Text
+                id="idmtextF2"
+                text="{viewModel>/Form2/Text}"
+                wrapping="true"
+                class="sapUiMediumFontSize form2NoteText"
+            />
+        </m:VBox>
+    </m:VBox>
+</core:FragmentDefinition>

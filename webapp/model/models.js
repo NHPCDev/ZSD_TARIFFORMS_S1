@@ -43,7 +43,7 @@ sap.ui.define([
                             "Key": "PC1002"
                         }
                     ],
-                    
+
 
 
 
@@ -62,7 +62,8 @@ sap.ui.define([
                     },
                     catalog: {
                         Form9A: []
-                    }
+                    },
+
                 }
                 var oModel = new JSONModel(oData);
                 return oModel;

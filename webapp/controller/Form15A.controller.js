@@ -68,7 +68,9 @@ sap.ui.define([
 					new Filter("Tarrif_id", FilterOperator.EQ, ""),
 					new Filter("Form_id", FilterOperator.EQ, this._FormID),
 					new Filter("Plant", FilterOperator.EQ, this._Plant),
-					new Filter("Flag", FilterOperator.EQ, "")
+					new Filter("Flag", FilterOperator.EQ, ""),
+					new Filter("Fisical_Year", FilterOperator.EQ, this._FiscalYear),
+
 				];
 
 				BusyIndicator.show(0);

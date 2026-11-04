@@ -11,3 +11,11 @@
     font-size: 1.25rem !important;
     font-weight: bold !important;
 }
+.form2NoteText {
+    color: #1D4E89;
+    line-height: 1.6;
+}
+.form2NoteTitle {
+    color: #1A1A1A !important;
+    font-weight: 700;
+}

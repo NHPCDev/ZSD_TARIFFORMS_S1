@@ -71,53 +71,7 @@ sap.ui.define([
             MessageToast.show("Form Details Pressed for Tariff ID: " + sTariffId + ", Form ID: " + sFormId);
         },
 
-        //attachment
-        // onPluginActivated: function (oEvent) {
-        //     this.oUploadPluginInstance = oEvent.getParameter("oPlugin");
-        //     var oUploadActionBtn = this.byId("idUploadPlaceholder"),
-        //         oUploadBtn = oUploadActionBtn.getAggregation("_actionButton");
-
-        //     oUploadBtn.setIcon("sap-icon://upload");
-        //     oUploadBtn.setStyle("Emphasized");
-        //     oUploadBtn.setIconFirst(true);
-
-
-        // },
-
-        // _loadCreateData: function () {
-
-        //     var oModel = this.getModel();
-        //     var oViewModel = this.getModel("viewModel");
-        //     let aFilters = [
-        //         new Filter("Fisical_Year", FilterOperator.EQ, oViewModel.getProperty("/Header/Tariff_Period"))
-        //     ]
-
-        //     BusyIndicator.show();
-
-        //     oModel.read("/TarrifMasterSet", {
-        //         filters: aFilters,
-        //         success: function (oData) {
-        //             console.log("TarrifMasterSet create data :", oData);
-
-        //             BusyIndicator.hide();
-
-        //             if (!oData.results || !oData.results.length) {
-        //                 oViewModel.setProperty("/TarrifMasterSet", []);
-        //                 return;
-        //             }
-
-        //             // all Forms here
-        //             oViewModel.setProperty("/Header/Forms", oData.results);
-        //             oViewModel.setProperty("/Header/Status", "New");
-
-        //         }.bind(this),
-
-        //         error: function (oError) {
-        //             BusyIndicator.hide();
-        //             messenger.error("Unable to load tariff form data");
-        //         }.bind(this)
-        //     });
-        // },
+       
         _loadTariffData: function (sTariffId) {
             var oModel = this.getModel();
             var oViewModel = this.getModel("viewModel");

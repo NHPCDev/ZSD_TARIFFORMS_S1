@@ -1,0 +1,75 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+>
+    <VBox id="basicdetaisVBoxBase2">
+        <f:SimpleForm
+            id="basicdetaisFormBase2"
+            editable="true"
+            layout="ColumnLayout"
+            columnsXL="2"
+            columnsL="2"
+            columnsM="2"
+            singleContainerFullSize="true"
+            
+        >
+            <f:content>
+
+                <core:Title id="basicDetailsTitleBase2" />
+
+                <Label
+                    id="profitCenterLabelBase2"
+                    text="{i18n>profitCenter}"
+                />
+                <Input
+                    id="profitCenterInputBase2"
+                    value="{viewModel>/Header/Profit_Center}"
+                    editable="false"
+                />
+
+                <Label
+                    id="companyLabelBase2"
+                    text="{i18n>Company}"
+                />
+                <Input
+                    id="companyInputBase2"
+                    value="{viewModel>/Form2/Company}"
+                    editable="false"
+                />
+                <Label
+                    id="generatingStationLabelBase2"
+                    text="{i18n>powerStation}"
+                />
+                <Input
+                    id="powerStationInputBase2"
+                    value="{viewModel>/Form2/Generating_Station}"
+                    editable="false"
+                />
+
+                <!-- <Label
+                    id="installedLabelBase2"
+                    text="{i18n>installedCapacity}"
+                />
+                <Input
+                    id="installedInputBase2"
+                    editable="false"
+                     value="{viewModel>/Form2/Installed_Capacity}"
+                /> -->
+
+                <Label
+                    id="formStatusLabelBase2"
+                    text="{i18n>status}"
+                />
+                <Input
+                    id="formStatusInputBase2"
+                    value="{
+                            path:'viewModel>/Form2/Status',
+                            formatter:'.formatter.formatStatusText' }"
+                    editable="false"
+                />
+
+            </f:content>
+        </f:SimpleForm>
+    </VBox>
+</core:FragmentDefinition>

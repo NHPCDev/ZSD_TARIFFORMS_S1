@@ -540,8 +540,8 @@ sap.ui.define([
                 if (sValue) {
                     if (sValueHelpName === "profitCenterValueHelpRequest") {
                         aFilters = [
-                            new Filter("Prctr", FilterOperator.Contains, sValue),
-                            new Filter("Ktext", FilterOperator.Contains, sValue)
+                            new Filter("Prctr", FilterOperator.EQ, sValue),
+                            new Filter("Ktext", FilterOperator.EQ, sValue)
                         ];
                     } else if (sValueHelpName === "plantValueHelpRequest") {
                         aFilters = [
