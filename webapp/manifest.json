@@ -187,6 +187,13 @@
           "target": [
             "TargetForm2"
           ]
+        },
+        {
+          "name": "RouteForm18",
+          "pattern": "Form18/{tariffId}/{formId}/{Fisical_Year}/{Status}",
+          "target": [
+            "TargetForm18"
+          ]
         }
       ],
       "targets": {
@@ -254,6 +261,10 @@
         "TargetForm2": {
           "id": "Form2",
           "name": "Form2"
+        },
+        "TargetForm18": {
+          "id": "Form18",
+          "name": "Form18"
         }
       }
     },

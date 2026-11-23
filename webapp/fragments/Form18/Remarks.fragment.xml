@@ -1,0 +1,25 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <VBox
+        id="idForm18RemarksVBox"
+        width="100%"
+    >
+        <Label
+            id="idForm18RemarksLabel"
+            text="{i18n>remarks}"
+        />
+        <TextArea
+            id="idForm18RemarksTextArea"
+            value="{viewModel>/Form18/Remarks}"
+            editable="{viewModel>/canEdit}"
+            rows="6"
+            width="100%"
+            growing="true"
+            valueState="{viewModel>/Form18/RemarksValueState}"
+            valueStateText="{viewModel>/Form18/RemarksValueStateText}"
+            change="onInputChange"
+        />
+    </VBox>
+</core:FragmentDefinition>

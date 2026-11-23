@@ -1,0 +1,42 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Table
+        id="idFiveColumnTable"
+        items="{viewModel>/Form18}"
+        growing="true"
+        growingThreshold="10"
+        growingScrollToLoad="true"
+        width="100%"
+    >
+        <columns>
+            <Column>
+                <Text text="{i18n>particulars}" />
+            </Column>
+            <Column>
+                <Text text="{i18n>year}" />
+            </Column>
+            <Column>
+                <Text text="{i18n>unitRate}" />
+            </Column>
+            <Column>
+                <Text text="{i18n>noOfUnits}" />
+            </Column>
+            <Column>
+                <Text text="{i18n>amountClaimed}" />
+            </Column>
+        </columns>
+        <items>
+            <ColumnListItem>
+                <cells>
+                    <Text text="{viewModel>particulars}" />
+                    <Text text="{viewModel>year}" />
+                    <Input value="{viewModel>unitRate}" liveChange="onNumberChange" editable="{= ${viewModel>/Status} !== 'Submitted' }"/>
+                    <Input value="{viewModel>noOfUnits}" liveChange="onNumberChange"  editable="{= ${viewModel>/Status} !== 'Submitted' }"/>
+                    <Input value="{viewModel>amountClaimed}" liveChange="onNumberChange" editable="{= ${viewModel>/Status} !== 'Submitted' }"/>
+                </cells>
+            </ColumnListItem>
+        </items>
+    </Table>
+</core:FragmentDefinition>
