@@ -220,9 +220,7 @@ sap.ui.define([
 				return;
 			}
 			let aChildren = oViewModel.getProperty(sParentPath + "/Form9bheaditem") || [];
-			const iChildCount = aChildren.filter(function (oChild) {
-				return !oChild.IsSubTotal && !oChild.IsTotal;
-			}).length;
+			const iChildCount = aChildren.length;
 			const oNewChild = {
 				Sno: oParent.Sno,
 				SubSno: String(iChildCount + 1).padStart(3, "0"),
