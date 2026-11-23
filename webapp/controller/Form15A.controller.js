@@ -6,7 +6,7 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/ui/core/Item",
-	 "sap/ui/core/ValueState",
+	"sap/ui/core/ValueState",
 ], function (BaseController, messenger, formatter, BusyIndicator, Filter, FilterOperator, Item, ValueState) {
 	"use strict";
 
@@ -207,7 +207,7 @@ sap.ui.define([
 				messenger.confirm(oResourceBundle.getText("CONFIRM_TITLE"), this.getText("confirmationMsgDraft", this._FiscalYear), "Confirm", null, function () {
 
 					BusyIndicator.show(0);
-					console.log("Payload for draft save 15A:", aPayload); 
+					console.log("Payload for draft save 15A:", aPayload);
 
 					oModel.create("/Form15BHeadSet", aPayload, {
 
@@ -773,6 +773,24 @@ sap.ui.define([
 					}
 
 				}.bind(this));
+			},
+
+			onDownloadAdobeForm: function () {
+
+				this.openAdobeForm({
+					Formid: this._FormID,
+					dateh: "",
+					location: "",
+					flagyn: "",
+					date: "",
+					srno: "",
+					reqno: "",
+					Fisical_Year: this._FiscalYear,
+					Plant: this._Plant,
+					Tarrif_id: this._TariffID,
+					Filename: ""
+				});
+
 			},
 
 

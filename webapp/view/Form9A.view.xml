@@ -36,25 +36,25 @@
                                                 text="{i18n>ObjectPageTitle} - {viewModel>/Header/Tariff_ID}"
                                                 wrapping="true"
                                             />
-                                            <HBox >
-                                            <ObjectStatus
-                                                title="{i18n>Form}"
-                                                text="9A"
-                                                class="sapMObjectStatusMedium statusBoldText"
-                                                state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
-                                            />
-                                            <ObjectStatus
-                                                title="{i18n>status}"
-                                                text="{viewModel>/Header/Status}"
-                                                class="sapMObjectStatusMedium statusBoldText sapUiSmallMarginBegin"
-                                                state="{path:'viewModel>/Header/Status',formatter:'.formatter.formatStatusState'}"
-                                            />
-                                             <ObjectStatus
-                                                title="{i18n>formStatus}"
-                                                text="{viewModel>/Status}"
-                                                class="sapMObjectStatusMedium statusBoldText sapUiSmallMarginBegin"
-                                                state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
-                                            />
+                                            <HBox>
+                                                <ObjectStatus
+                                                    title="{i18n>Form}"
+                                                    text="9A"
+                                                    class="sapMObjectStatusMedium statusBoldText"
+                                                    state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
+                                                />
+                                                <ObjectStatus
+                                                    title="{i18n>status}"
+                                                    text="{viewModel>/Header/Status}"
+                                                    class="sapMObjectStatusMedium statusBoldText sapUiSmallMarginBegin"
+                                                    state="{path:'viewModel>/Header/Status',formatter:'.formatter.formatStatusState'}"
+                                                />
+                                                <ObjectStatus
+                                                    title="{i18n>formStatus}"
+                                                    text="{viewModel>/Status}"
+                                                    class="sapMObjectStatusMedium statusBoldText sapUiSmallMarginBegin"
+                                                    state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
+                                                />
                                             </HBox>
                                         </VBox>
                                     </HBox>
@@ -75,29 +75,38 @@
                                                 text="{i18n>ObjectPageTitle} - {viewModel>/Header/Tariff_ID}"
                                                 wrapping="true"
                                             />
-                                            <HBox >
-                                            <ObjectStatus
-                                                title="{i18n>Form}"
-                                                text="9A"
-                                                class="sapMObjectStatusMedium statusBoldText"
-                                                state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
-                                            />
-                                            <ObjectStatus
-                                                title="{i18n>status}"
-                                                text="{viewModel>/Header/Status}"
-                                                class="sapMObjectStatusMedium statusBoldText sapUiSmallMarginBegin"
-                                                state="{path:'viewModel>/Header/Status',formatter:'.formatter.formatStatusState'}"
-                                            />
-                                             <ObjectStatus
-                                                title="{i18n>formStatus}"
-                                                text="{viewModel>/Status}"
-                                                class="sapMObjectStatusMedium statusBoldText sapUiSmallMarginBegin"
-                                                state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
-                                            />
+                                            <HBox>
+                                                <ObjectStatus
+                                                    title="{i18n>Form}"
+                                                    text="9A"
+                                                    class="sapMObjectStatusMedium statusBoldText"
+                                                    state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
+                                                />
+                                                <ObjectStatus
+                                                    title="{i18n>status}"
+                                                    text="{viewModel>/Header/Status}"
+                                                    class="sapMObjectStatusMedium statusBoldText sapUiSmallMarginBegin"
+                                                    state="{path:'viewModel>/Header/Status',formatter:'.formatter.formatStatusState'}"
+                                                />
+                                                <ObjectStatus
+                                                    title="{i18n>formStatus}"
+                                                    text="{viewModel>/Status}"
+                                                    class="sapMObjectStatusMedium statusBoldText sapUiSmallMarginBegin"
+                                                    state="{path:'viewModel>/Status',formatter:'.formatter.formatStatusState'}"
+                                                />
                                             </HBox>
                                         </VBox>
                                     </HBox>
                                 </uxap:snappedHeading>
+                                <uxap:actions>
+                                    <Button
+                                        id="idDownloadAdobeForm"
+                                        text="{i18n>downloadAdobeForm}"
+                                        icon="sap-icon://pdf-reader"
+                                        type="Attention"
+                                        press="onDownloadAdobeForm"
+                                    />
+                                </uxap:actions>
                             </uxap:ObjectPageDynamicHeaderTitle>
                         </uxap:headerTitle>
                         <uxap:headerContent>

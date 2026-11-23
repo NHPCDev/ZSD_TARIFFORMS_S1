@@ -10,11 +10,12 @@ sap.ui.define([
     "sap/m/SearchField",
     "sap/m/Label",
     "sap/m/Text",
+    "sap/m/PDFViewer"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (Controller, messenger, BusyIndicator, Filter, FilterOperator, ValueState, DateFormat, Fragment, SearchField, Label, Text) {
+    function (Controller, messenger, BusyIndicator, Filter, FilterOperator, ValueState, DateFormat, Fragment, SearchField, Label, Text, PDFViewer) {
         "use strict";
 
         return Controller.extend("com.nhpc.zsdtarifformss1.controller.BaseController", {
@@ -115,7 +116,7 @@ sap.ui.define([
             getText: function (sKey, aArgs) {
                 return this.getResourceBundle().getText(sKey, aArgs);
             },
-           
+
 
             onNavBack: function () {
                 this.getOwnerComponent().getRouter().navTo("RouteDashboard");
@@ -445,6 +446,38 @@ sap.ui.define([
                     }.bind(this)
                 });
             },
-            
+
+            // for downloading adobe form
+            openAdobeForm: function (oParams) {
+                console.log("openAdobeForm called with params:", oParams);
+
+                var oModel = this.getModel();
+
+                if (!this._oAdobePdfViewer) {
+                    this._oAdobePdfViewer = new PDFViewer({
+                        isTrustedSource: true
+                    });
+                }
+
+                var sUrl = oModel.sServiceUrl + "/AttachmentSet(" +
+                    "Formid='" + encodeURIComponent(oParams.Formid || "") + "'," +
+                    "dateh='" + encodeURIComponent(oParams.dateh || "") + "'," +
+                    "location='" + encodeURIComponent(oParams.location || "") + "'," +
+                    "flagyn='" + encodeURIComponent(oParams.flagyn || "") + "'," +
+                    "date='" + encodeURIComponent(oParams.date || "") + "'," +
+                    "srno='" + encodeURIComponent(oParams.srno || "") + "'," +
+                    "reqno='" + encodeURIComponent(oParams.reqno || "") + "'," +
+                    "Fisical_Year='" + encodeURIComponent(oParams.Fisical_Year || "") + "'," +
+                    "Plant='" + encodeURIComponent(oParams.Plant || "") + "'," +
+                    "Tarrif_id='" + encodeURIComponent(oParams.Tarrif_id || "") + "'," +
+                    "Filename='" + encodeURIComponent(oParams.Filename || "") + "'" +
+                    ")/$value";
+                console.log("Adobe Form URL:", sUrl);
+
+                this._oAdobePdfViewer.setSource(sUrl);
+                this._oAdobePdfViewer.setTitle("Adobe Form");
+                this._oAdobePdfViewer.open();
+            },
+
         });
     });

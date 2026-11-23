@@ -941,7 +941,7 @@ sap.ui.define([
 				sFileName = oViewModel.getProperty(sPath + "/Filename"),
 				sTitle = oResourceBundle.getText("CONFIRM_TITLE");
 
-			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg",[objectAtt.Filename]);
+			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg", [objectAtt.Filename]);
 
 			messenger.confirm(sTitle, sMessage, "Confirm", null, function () {
 				this.deleteAttachment(objectAtt);
@@ -1006,7 +1006,7 @@ sap.ui.define([
 				sFileName = oViewModel.getProperty(sPath + "/Filename"),
 				sTitle = oResourceBundle.getText("CONFIRM_TITLE");
 
-			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg",[sFileName]);
+			var sMessage = oResourceBundle.getText("removeDocumentWarningMsg", [sFileName]);
 
 			messenger.confirm(sTitle, sMessage, "Confirm", null, function () {
 
@@ -1220,7 +1220,7 @@ sap.ui.define([
 							Accural_Basis: fnGetValue(oRow, "Accural_Basis"),
 							Discharge_Liabilty: "0.00",
 							Cash_Basis: "",
-							Idc:"",
+							Idc: "",
 							Regulation: fnGetValue(oRow, "Regulation"),
 							Justification: fnGetValue(oRow, "Justification"),
 							Admitted_Cost: ""
@@ -1285,6 +1285,24 @@ sap.ui.define([
 				messenger.error(oResourceBundle.getText("excelUploadError"));
 			};
 			oReader.readAsBinaryString(oFile);
+		},
+
+		onDownloadAdobeForm: function () {
+
+			this.openAdobeForm({
+				Formid: this._FormID,
+				dateh: "",
+				location: "",
+				flagyn: "",
+				date: "",
+				srno: "",
+				reqno: "",
+				Fisical_Year: this._FiscalYear,
+				Plant: this._Plant,
+				Tarrif_id: this._TariffID,
+				Filename: ""
+			});
+
 		},
 
 	});
